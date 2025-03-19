@@ -15,11 +15,13 @@
  */
 package com.github.alexfalappa.nbspringboot;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.boot.configurationmetadata.ConfigurationMetadataProperty;
 import org.springframework.boot.configurationmetadata.Deprecation;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Test Utils class.
@@ -27,7 +29,7 @@ import static org.junit.Assert.*;
  * @author Hector Espert
  */
 public class UtilsTest {
-    
+
     @Test
     public void testSimpleHtmlEscape() {
         System.out.println("simpleHtmlEscape");

@@ -9,18 +9,16 @@ import java.nio.file.Paths;
 import java.util.Properties;
 import java.util.TreeSet;
 
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
 
-import com.github.alexfalappa.nbspringboot.cfgprops.LexerTests;
-
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Base test class to factor out lexing methods.
  *
  * @author Alessandro Falappa
  */
-@Category(LexerTests.class)
+@Tag("LexerTests")
 public class TestBase {
 
     protected void parseNoMatch(String input) {

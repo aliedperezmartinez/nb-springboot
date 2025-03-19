@@ -16,8 +16,12 @@
 package com.github.alexfalappa.nbspringboot.projects.initializr;
 
 import java.util.ArrayList;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Tests for {@link ArtifactVersion}
@@ -101,32 +105,32 @@ public class ArtifactVersionTest {
         assertEquals(new ArtifactVersion(1, 2, 3, "BUILD-SNAPSHOT"), ArtifactVersion.of(versionString));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testOf5() {
         String versionString = "1.2.3_INVALID";
         System.out.println("of " + versionString);
-        ArtifactVersion.of(versionString);
+        assertThrows(IllegalArgumentException.class, () -> ArtifactVersion.of(versionString));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testOf6() {
         String versionString = "1.a.3";
         System.out.println("of " + versionString);
-        ArtifactVersion.of(versionString);
+        assertThrows(IllegalArgumentException.class, () -> ArtifactVersion.of(versionString));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testOf7() {
         String versionString = "-1.2.3";
         System.out.println("of " + versionString);
-        ArtifactVersion.of(versionString);
+        assertThrows(IllegalArgumentException.class, () -> ArtifactVersion.of(versionString));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testOf8() {
         String versionString = "1.-2.3";
         System.out.println("of " + versionString);
-        ArtifactVersion.of(versionString);
+        assertThrows(IllegalArgumentException.class, () -> ArtifactVersion.of(versionString));
     }
 
     @Test

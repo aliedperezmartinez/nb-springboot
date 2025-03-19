@@ -24,7 +24,7 @@ import org.netbeans.contrib.yenta.Yenta;
 /**
  * Avoid implementation dependencies by making the plugin friend of non-api modules.
  * <p>
- * Uses https://bitbucket.org/jglick/yenta
+ * Uses https://github.com/jglick/yenta
  *
  * @author Alessandro Falappa
  */

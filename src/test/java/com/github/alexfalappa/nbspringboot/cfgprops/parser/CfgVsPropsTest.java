@@ -9,13 +9,13 @@ import java.nio.file.Paths;
 import java.util.Map;
 import java.util.Properties;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.parboiled.errors.ErrorUtils;
 import org.parboiled.errors.ParseError;
 import org.parboiled.support.ParsingResult;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Test comparing {@code java.util.Properties} loading versus parsing.
@@ -46,14 +46,15 @@ public class CfgVsPropsTest extends TestBase {
                     System.out.format("\t%s%n", ErrorUtils.printParseError(pe));
                 }
             }
-            assertTrue("Failed parsing", pr.matched);
-            assertEquals("Different loaded/parsed sizes", loaded.size(), parsed.size());
+            assertTrue(pr.matched, "Failed parsing");
+            assertEquals(loaded.size(), parsed.size(), "Different loaded/parsed sizes");
             for (Map.Entry<Object, Object> entry : loaded.entrySet()) {
-                assertTrue(String.format("Missing key %s in parsed", entry.getKey()),
-                        parsed.containsKey(entry.getKey()));
-                assertEquals(String.format("Different loaded-parsed values for key %s", entry.getKey()),
+                assertTrue(parsed.containsKey(entry.getKey()),
+                        String.format("Missing key %s in parsed", entry.getKey()));
+                assertEquals(
                         entry.getValue(),
-                        parsed.get(entry.getKey().toString()));
+                        parsed.get(entry.getKey().toString()),
+                        String.format("Different loaded-parsed values for key %s", entry.getKey()));
             }
         }
     }

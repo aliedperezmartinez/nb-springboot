@@ -15,7 +15,6 @@
  */
 package com.github.alexfalappa.nbspringboot.cfgprops.parser;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
@@ -133,7 +132,7 @@ public class CfgPropsParser extends Parser {
 
         @Override
         public List<? extends Error> getDiagnostics() {
-            return Collections.EMPTY_LIST;
+            return List.of();
         }
 
     }

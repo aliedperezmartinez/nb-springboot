@@ -2,9 +2,7 @@ package com.github.alexfalappa.nbspringboot.cfgprops.lexer;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-
-import org.junit.Test;
-
+import org.junit.jupiter.api.Test;
 /**
  * Syntax test suite for CfgPropsScanner.
  *

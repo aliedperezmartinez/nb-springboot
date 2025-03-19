@@ -7,9 +7,9 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Properties;
 import java.util.TreeSet;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 
-import org.junit.Before;
-import org.junit.experimental.categories.Category;
 import org.parboiled.Parboiled;
 import org.parboiled.errors.ErrorUtils;
 import org.parboiled.errors.ParseError;
@@ -18,17 +18,16 @@ import org.parboiled.parserunners.TracingParseRunner;
 import org.parboiled.support.ParseTreeUtils;
 import org.parboiled.support.ParsingResult;
 
-import com.github.alexfalappa.nbspringboot.cfgprops.ParserTests;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Base test class to factor out parsing methods.
  *
  * @author Alessandro Falappa
  */
-@Category(ParserTests.class)
+@Tag("LexerTests")
 public class TestBase {
 
     final protected CfgPropsParboiled parser;
@@ -41,7 +40,7 @@ public class TestBase {
         reportingRunner = new ReportingParseRunner(parser.cfgProps());
     }
 
-    @Before
+    @BeforeEach
     public void clearParser() {
         parser.reset();
     }

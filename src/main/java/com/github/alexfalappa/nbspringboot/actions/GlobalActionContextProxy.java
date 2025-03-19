@@ -99,14 +99,11 @@ public class GlobalActionContextProxy implements ContextGlobalProvider {
         } catch (Exception e) {
             Exceptions.printStackTrace(e);
         }
-        WindowManager.getDefault().invokeWhenUIReady(new Runnable() {
-            @Override
-            public void run() {
-                // Hack to force the current Project selection when the application starts up
-                TopComponent tc = WindowManager.getDefault().findTopComponent(PROJECT_LOGICAL_TAB_ID);
-                if (tc != null) {
-                    tc.requestActive();
-                }
+        WindowManager.getDefault().invokeWhenUIReady(() -> {
+            // Hack to force the current Project selection when the application starts up
+            TopComponent tc = WindowManager.getDefault().findTopComponent(PROJECT_LOGICAL_TAB_ID);
+            if (tc != null) {
+                tc.requestActive();
             }
         });
     }
@@ -194,7 +191,7 @@ public class GlobalActionContextProxy implements ContextGlobalProvider {
             logger.finer("resultChanged: Entered...");
             synchronized (lock) {
                 // First, handle projects in the principle lookup
-                if (resultProjects.allInstances().size() > 0) {
+                if (!resultProjects.allInstances().isEmpty()) {
                     // Clear the proxy, and remember this project.
                     // Note: not handling multiple selection of projects.
                     clearProjectLookup();

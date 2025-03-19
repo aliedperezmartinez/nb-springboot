@@ -17,6 +17,7 @@ package com.github.alexfalappa.nbspringboot;
 
 import static com.github.alexfalappa.nbspringboot.PrefConstants.PREF_VM_OPTS;
 import static com.github.alexfalappa.nbspringboot.PrefConstants.PREF_VM_OPTS_LAUNCH;
+
 import com.github.alexfalappa.nbspringboot.cfgprops.completion.items.FileObjectCompletionItem;
 import com.github.alexfalappa.nbspringboot.cfgprops.completion.items.ValueCompletionItem;
 import com.github.alexfalappa.nbspringboot.projects.customizer.BootPanel;
@@ -24,6 +25,7 @@ import com.github.alexfalappa.nbspringboot.projects.service.impl.HintSupport;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
@@ -35,11 +37,15 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.logging.Level;
+
 import static java.util.logging.Level.FINE;
 import static java.util.logging.Level.WARNING;
+
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
+
 import static java.util.regex.Pattern.compile;
+
 import java.util.stream.Stream;
 import javax.swing.AbstractButton;
 import javax.swing.DefaultButtonModel;
@@ -473,8 +479,11 @@ public final class Utils {
     private static JComponent getSubstitute(Class<?> clazz) throws IllegalAccessException {
         JComponent standInComponent;
         try {
-            standInComponent = (JComponent) clazz.newInstance();
-        } catch (InstantiationException e) {
+            standInComponent = (JComponent)  clazz.getDeclaredConstructor().newInstance();
+        } catch (InstantiationException |
+            NoSuchMethodException |
+            SecurityException |
+            InvocationTargetException e) {
             standInComponent = new AbstractButton() {
             };
             ((AbstractButton) standInComponent).setModel(new DefaultButtonModel());
@@ -512,7 +521,7 @@ public final class Utils {
                 .filter(NbMavenProjectImpl.class::isInstance)
                 .map(NbMavenProjectImpl.class::cast)
                 // All dependencies that this project has, including transitive ones.
-                .flatMap(p -> ((Set<Artifact>) p.getOriginalMavenProject().getArtifacts()).stream())
+                .flatMap(p -> p.getOriginalMavenProject().getArtifacts().stream())
                 .filter(Utils::isSpringBootStarterArtifact)
                 .map(Artifact::getVersion)
                 .peek(springBootVersion -> logger.log(FINE, "Spring Boot version {0} detected", springBootVersion))
