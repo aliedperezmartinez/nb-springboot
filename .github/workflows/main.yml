@@ -15,7 +15,7 @@ jobs:
         key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
         restore-keys: |
           ${{ runner.os }}-maven-
-    - name: Set up JDK 1.8
+    - name: Set up JDK
       uses: actions/setup-java@v4.7.0
       with:
         java-version: 17
