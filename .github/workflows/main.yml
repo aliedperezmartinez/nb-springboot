@@ -19,5 +19,6 @@ jobs:
       uses: actions/setup-java@v4.7.0
       with:
         java-version: 17
+        distribution: adopt
     - name: Build with Maven
       run: mvn -B -P test install
