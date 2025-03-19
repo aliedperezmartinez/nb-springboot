@@ -279,7 +279,7 @@
         <dependency>
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-openide-modules</artifactId>
-            <version>RELEASE250</version>
+            <version>${netbeans.api.version}</version>
         </dependency>
         <!--        <dependency>
             <groupId>org.netbeans.contrib.yenta</groupId>
