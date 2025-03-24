@@ -61,11 +61,11 @@
             <version>1.4.1</version>
         </dependency>
         <!--NetBeans Platform dependencies-->
-        <!--        <dependency>
+        <dependency>
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-openide-modules</artifactId>
             <version>${netbeans.api.version}</version>
-        </dependency>-->
+        </dependency>
         <dependency>
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-openide-filesystems</artifactId>
@@ -274,11 +274,6 @@
         <dependency>
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-netbeans-core-multiview</artifactId>
-            <version>${netbeans.api.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.netbeans.api</groupId>
-            <artifactId>org-openide-modules</artifactId>
             <version>${netbeans.api.version}</version>
         </dependency>
         <!--        <dependency>
