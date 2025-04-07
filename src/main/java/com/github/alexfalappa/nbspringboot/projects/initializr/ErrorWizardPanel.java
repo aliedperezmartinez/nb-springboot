@@ -30,7 +30,7 @@ import org.openide.util.HelpCtx;
  */
 class ErrorWizardPanel implements WizardDescriptor.Panel {
 
-    private JLabel lErrMessage = new JLabel();
+    private final JLabel lErrMessage = new JLabel();
 
     public ErrorWizardPanel() {
     }

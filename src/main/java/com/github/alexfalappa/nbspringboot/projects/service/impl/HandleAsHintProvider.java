@@ -53,32 +53,21 @@ public class HandleAsHintProvider implements HintProvider {
         }
         String targetType = params.get("target").toString();
         switch (targetType) {
-            case "java.util.List<org.springframework.core.io.Resource>":
-            case "java.util.Set<org.springframework.core.io.Resource>":
-            case "org.springframework.core.io.Resource":
-                Utils.completeSpringResource(resourcesFolder, filter, completionResultSet, dotOffset, caretOffset);
-                break;
-            case "java.util.List<java.nio.charset.Charset>":
-            case "java.util.Set<java.nio.charset.Charset>":
-            case "java.nio.charset.Charset":
-                Utils.completeCharset(filter, hint -> {
-                    completionResultSet.addItem(new ValueCompletionItem(hint, dotOffset, caretOffset));
-                });
-                break;
-            case "java.util.List<java.util.Locale>":
-            case "java.util.Set<java.util.Locale>":
-            case "java.util.Locale":
-                Utils.completeLocale(filter, hint -> {
-                    completionResultSet.addItem(new ValueCompletionItem(hint, dotOffset, caretOffset));
-                });
-                break;
-            case "org.springframework.util.MimeType":
-                Utils.completeMimetype(filter, hint -> {
-                    completionResultSet.addItem(new ValueCompletionItem(hint, dotOffset, caretOffset));
-                });
-                break;
-            default:
-                // try to interpret the targetType as an enum
+            case "java.util.List<org.springframework.core.io.Resource>",
+                "java.util.Set<org.springframework.core.io.Resource>",
+                "org.springframework.core.io.Resource" -> Utils.completeSpringResource(resourcesFolder, filter, completionResultSet, dotOffset, caretOffset);
+            case "java.util.List<java.nio.charset.Charset>", "java.util.Set<java.nio.charset.Charset>", "java.nio.charset.Charset" -> Utils.completeCharset(filter, hint -> {
+                completionResultSet.addItem(new ValueCompletionItem(hint, dotOffset, caretOffset));
+            });
+            case "java.util.List<java.util.Locale>",
+                "java.util.Set<java.util.Locale>",
+                "java.util.Locale" -> Utils.completeLocale(filter, hint -> {
+                completionResultSet.addItem(new ValueCompletionItem(hint, dotOffset, caretOffset));
+            });
+            case "org.springframework.util.MimeType" -> Utils.completeMimetype(filter, hint -> {
+                completionResultSet.addItem(new ValueCompletionItem(hint, dotOffset, caretOffset));
+            });
+            default -> // try to interpret the targetType as an enum
                 Utils.completeEnum(cpExec, targetType, filter, hint -> {
                     completionResultSet.addItem(new ValueCompletionItem(hint, dotOffset, caretOffset));
                 });

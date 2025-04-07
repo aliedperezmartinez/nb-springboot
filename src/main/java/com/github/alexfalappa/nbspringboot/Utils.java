@@ -15,9 +15,6 @@
  */
 package com.github.alexfalappa.nbspringboot;
 
-import static com.github.alexfalappa.nbspringboot.PrefConstants.PREF_VM_OPTS;
-import static com.github.alexfalappa.nbspringboot.PrefConstants.PREF_VM_OPTS_LAUNCH;
-
 import com.github.alexfalappa.nbspringboot.cfgprops.completion.items.FileObjectCompletionItem;
 import com.github.alexfalappa.nbspringboot.cfgprops.completion.items.ValueCompletionItem;
 import com.github.alexfalappa.nbspringboot.projects.customizer.BootPanel;
@@ -31,21 +28,14 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashSet;
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.logging.Level;
-
-import static java.util.logging.Level.FINE;
-import static java.util.logging.Level.WARNING;
-
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
-
-import static java.util.regex.Pattern.compile;
-
 import java.util.stream.Stream;
 import javax.swing.AbstractButton;
 import javax.swing.DefaultButtonModel;
@@ -79,6 +69,12 @@ import org.springframework.boot.configurationmetadata.ConfigurationMetadataPrope
 import org.springframework.boot.configurationmetadata.Deprecation;
 import org.springframework.boot.configurationmetadata.ValueHint;
 
+import static com.github.alexfalappa.nbspringboot.PrefConstants.PREF_VM_OPTS;
+import static com.github.alexfalappa.nbspringboot.PrefConstants.PREF_VM_OPTS_LAUNCH;
+
+import static java.util.logging.Level.FINE;
+import static java.util.logging.Level.WARNING;
+import static java.util.regex.Pattern.compile;
 /**
  * Utility methods used in the plugin.
  *
@@ -91,17 +87,10 @@ public final class Utils {
     private static final Pattern PATTERN_JAVATYPE = compile("(\\w+\\.)+(\\w+)");
     private static final String PREFIX_CLASSPATH = "classpath:/";
     private static final String PREFIX_FILE = "file://";
-    private static final Set<String> resourcePrefixes = new HashSet<>();
+    private static final Set<String> resourcePrefixes = Set.of(PREFIX_CLASSPATH, PREFIX_FILE, "http://", "https://");
 
     // prevent instantiation
     private Utils() {
-    }
-
-    static {
-        resourcePrefixes.add(PREFIX_CLASSPATH);
-        resourcePrefixes.add(PREFIX_FILE);
-        resourcePrefixes.add("http://");
-        resourcePrefixes.add("https://");
     }
 
     /**
@@ -182,8 +171,10 @@ public final class Utils {
     }
 
     public static boolean isErrorDeprecated(ConfigurationMetadataProperty meta) {
-        Deprecation depr = meta.getDeprecation();
-        return depr != null && depr.getLevel() != null && depr.getLevel().equals(Deprecation.Level.ERROR);
+        return Optional.ofNullable(meta.getDeprecation())
+            .map(Deprecation::getLevel)
+            .map(Deprecation.Level.ERROR::equals)
+            .orElse(Boolean.FALSE);
     }
 
     /**
@@ -287,38 +278,35 @@ public final class Utils {
 
     public static void completeCharset(String filter, Consumer<ValueHint> consumer) {
         HintSupport.getAllCharsets().stream()
-                .filter(chrsName -> chrsName.toLowerCase().contains(filter.toLowerCase()))
-                .forEachOrdered(chrsName -> {
-                    consumer.accept(Utils.createHint(chrsName));
-                });
+            .filter(chrsName -> chrsName.toLowerCase().contains(filter.toLowerCase()))
+            .map(Utils::createHint)
+            .forEachOrdered(consumer);
     }
 
     public static void completeLocale(String filter, Consumer<ValueHint> consumer) {
         HintSupport.getAllLocales().stream()
-                .filter(lclName -> lclName.toLowerCase().contains(filter.toLowerCase()))
-                .forEachOrdered(lclName -> {
-                    consumer.accept(Utils.createHint(lclName));
-                });
+            .filter(lclName -> lclName.toLowerCase().contains(filter.toLowerCase()))
+            .map(Utils::createHint)
+            .forEachOrdered(consumer);
     }
 
     public static void completeMimetype(String filter, Consumer<ValueHint> consumer) {
         HintSupport.MIMETYPES.stream()
                 .filter(mime -> mime.toLowerCase().contains(filter.toLowerCase()))
-                .forEachOrdered(mime -> {
-                    consumer.accept(Utils.createHint(mime));
-                });
+                .map(Utils::createHint)
+                .forEachOrdered(consumer);
     }
 
     public static void completeEnum(ClassPath cp, String dataType, String filter, Consumer<ValueHint> consumer) {
         try {
             Object[] enumvals = cp.getClassLoader(true).loadClass(dataType).getEnumConstants();
             if (enumvals != null) {
-                for (Object val : enumvals) {
-                    final String valName = val.toString().toLowerCase();
-                    if (filter == null || valName.contains(filter)) {
-                        consumer.accept(createEnumHint(valName));
-                    }
-                }
+                Arrays.stream(enumvals)
+                    .map(Object::toString)
+                    .map(String::toLowerCase)
+                    .filter(valName -> filter == null || valName.contains(filter))
+                    .map(Utils::createEnumHint)
+                    .forEach(consumer);
             }
         } catch (ClassNotFoundException ex) {
             // enum not available in project classpath, no completion possible
@@ -461,7 +449,7 @@ public final class Utils {
             try {
                 // try to instantiate the needed java.awt.Component
                 String className = e.getMessage();
-                className = className.substring(className.lastIndexOf(" ") + 1);
+                className = className.substring(className.lastIndexOf(' ') + 1);
                 Class<?> clazz = Class.forName(className);
                 JComponent standInComponent = getSubstitute(clazz);
                 ico.paintIcon(standInComponent, g2, 0, 0);

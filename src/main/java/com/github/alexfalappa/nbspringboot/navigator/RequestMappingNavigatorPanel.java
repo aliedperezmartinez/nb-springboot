@@ -24,8 +24,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 
 import org.netbeans.api.java.source.ui.ElementOpen;
 import org.netbeans.spi.navigator.NavigatorPanel;
@@ -34,7 +32,6 @@ import org.netbeans.swing.etable.ETable;
 import org.openide.cookies.EditorCookie;
 import org.openide.loaders.DataObject;
 import org.openide.util.Lookup;
-import org.openide.util.LookupEvent;
 import org.openide.util.LookupListener;
 import org.openide.util.NbBundle.Messages;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -53,7 +50,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 public class RequestMappingNavigatorPanel implements NavigatorPanel {
 
     /** Object used as example, replace with your own data source, for example JavaDataObject etc */
-    private static final Lookup.Template MY_DATA = new Lookup.Template(DataObject.class);
+    private static final Lookup.Template<DataObject> MY_DATA = new Lookup.Template<>(DataObject.class);
 
     /**
      * holds UI of this panel.
@@ -82,37 +79,30 @@ public class RequestMappingNavigatorPanel implements NavigatorPanel {
         table.setColumnSorted(0, true, 1);
         table.setDefaultRenderer(RequestMethod.class, new RequestMethodCellRenderer());
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-            @Override
-            public void valueChanged(ListSelectionEvent event) {
-                final int selectedRow = ((ListSelectionModel) event.getSource()).getMinSelectionIndex();
-                if (event.getValueIsAdjusting() || selectedRow < 0) {
-                    return;
-                }
-                final MappedElement mappedElement = mappedElementsModel.getElementAt(table.convertRowIndexToModel(selectedRow));
-                ElementOpen.open(mappedElement.getFileObject(), mappedElement.getHandle());
-                try {
-                    final DataObject dataObject = DataObject.find(mappedElement.getFileObject());
-                    final EditorCookie editorCookie = dataObject.getLookup().lookup(EditorCookie.class);
-                    if (editorCookie != null) {
-                        editorCookie.openDocument();
-                        JEditorPane[] p = editorCookie.getOpenedPanes();
-                        if (p.length > 0) {
-                            p[0].requestFocus();
-                        }
+        table.getSelectionModel().addListSelectionListener(event -> {
+            final int selectedRow = ((ListSelectionModel) event.getSource()).getMinSelectionIndex();
+            if (event.getValueIsAdjusting() || selectedRow < 0) {
+                return;
+            }
+            final MappedElement mappedElement = mappedElementsModel.getElementAt(table.convertRowIndexToModel(selectedRow));
+            ElementOpen.open(mappedElement.getFileObject(), mappedElement.getHandle());
+            try {
+                final DataObject dataObject = DataObject.find(mappedElement.getFileObject());
+                final EditorCookie editorCookie = dataObject.getLookup().lookup(EditorCookie.class);
+                if (editorCookie != null) {
+                    editorCookie.openDocument();
+                    JEditorPane[] p = editorCookie.getOpenedPanes();
+                    if (p.length > 0) {
+                        p[0].requestFocus();
                     }
-                } catch (IOException e) {
                 }
+            } catch (IOException e) {
             }
         });
         final JPanel panel = new JPanel(new BorderLayout());
         panel.add(new JScrollPane(table), BorderLayout.CENTER);
         this.component = panel;
-        this.contextListener = new LookupListener() {
-            @Override
-            public void resultChanged(LookupEvent le) {
-            }
-        };
+        this.contextListener = le -> {};
     }
 
     @Override

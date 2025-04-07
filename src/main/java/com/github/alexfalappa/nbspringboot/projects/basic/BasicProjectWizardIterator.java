@@ -74,7 +74,7 @@ import static com.github.alexfalappa.nbspringboot.PrefConstants.PREF_MANUAL_REST
 @Messages("BasicSpringbootProject_displayName=Spring Boot basic project")
 public class BasicProjectWizardIterator implements WizardDescriptor.ProgressInstantiatingIterator {
 
-    public static final String BOOTVERSION = "2.4.0";
+    public static final String BOOTVERSION = "3.4.3";
 
     private int index;
     private WizardDescriptor.Panel[] panels;
@@ -155,9 +155,7 @@ public class BasicProjectWizardIterator implements WizardDescriptor.ProgressInst
                 // chooser to appear in the list of steps.
                 steps[i] = c.getName();
             }
-            if (c instanceof JComponent) { // assume Swing components
-                JComponent jc = (JComponent) c;
-                // Step #.
+            if (c instanceof JComponent jc) {                 // Step #.
                 jc.putClientProperty(WizardDescriptor.PROP_CONTENT_SELECTED_INDEX, i);
                 // Step name (actually the whole list for reference).
                 jc.putClientProperty(WizardDescriptor.PROP_CONTENT_DATA, steps);

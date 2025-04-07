@@ -15,8 +15,6 @@
  */
 package com.github.alexfalappa.nbspringboot;
 
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Set;
 
 import org.netbeans.contrib.yenta.Yenta;
@@ -32,18 +30,18 @@ public class Installer extends Yenta {
 
     @Override
     protected Set<String> friends() {
-        return new HashSet<>(Arrays.asList(
-                "org.netbeans.modules.maven.embedder",
-                "org.netbeans.modules.maven.model"
-        ));
+        return Set.of(
+            "org.netbeans.modules.maven.embedder",
+            "org.netbeans.modules.maven.model"
+        );
     }
 
     @Override
     protected Set<String> siblings() {
-        return new HashSet<>(Arrays.asList(
-                "org.netbeans.modules.maven",
-                "org.openide.windows"
-        ));
+        return Set.of(
+            "org.netbeans.modules.maven",
+            "org.openide.windows"
+        );
     }
 
 }

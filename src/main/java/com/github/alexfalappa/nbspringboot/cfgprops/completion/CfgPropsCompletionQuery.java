@@ -15,7 +15,6 @@
  */
 package com.github.alexfalappa.nbspringboot.cfgprops.completion;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.logging.Logger;
@@ -65,26 +64,25 @@ public class CfgPropsCompletionQuery extends AsyncCompletionQuery {
     private static final Pattern PATTERN_MAPKEY_DATATYPE = Pattern.compile("java.util.Map<([^,]+),.*>");
     private static final Pattern PATTERN_MAPVALUE_DATATYPE = Pattern.compile("java.util.Map<.*,(.*)>");
     private static final Pattern PATTERN_NUMBER_UNIT = Pattern.compile("\\d+(\\w*)");
-    private static final Map<String, String> DURATION_SUFFIXES = new HashMap<>();
-    private static final Map<String, String> DATASIZE_SUFFIXES = new HashMap<>();
+    private static final Map<String, String> DURATION_SUFFIXES = Map.of(
+        "ns", "nanoseconds",
+        "us", "microseconds",
+        "ms", "milliseconds",
+        "s", "seconds",
+        "m", "minutes",
+        "h", "hours",
+        "d", "days"
+    );
+    private static final Map<String, String> DATASIZE_SUFFIXES = Map.of(
+        "B", "bytes",
+        "KB", "kilobytes",
+        "MB", "megabytes",
+        "GB", "gigabytes",
+        "TB", "terabytes"
+    );
     private final SpringBootService sbs;
     private final Project proj;
     private final FileObject resourcesFolder;
-
-    static {
-        DURATION_SUFFIXES.put("ns", "nanoseconds");
-        DURATION_SUFFIXES.put("us", "microseconds");
-        DURATION_SUFFIXES.put("ms", "milliseconds");
-        DURATION_SUFFIXES.put("s", "seconds");
-        DURATION_SUFFIXES.put("m", "minutes");
-        DURATION_SUFFIXES.put("h", "hours");
-        DURATION_SUFFIXES.put("d", "days");
-        DATASIZE_SUFFIXES.put("B", "bytes");
-        DATASIZE_SUFFIXES.put("KB", "kilobytes");
-        DATASIZE_SUFFIXES.put("MB", "megabytes");
-        DATASIZE_SUFFIXES.put("GB", "gigabytes");
-        DATASIZE_SUFFIXES.put("TB", "terabytes");
-    }
 
     public CfgPropsCompletionQuery(SpringBootService sbs, Project proj) {
         this.sbs = Objects.requireNonNull(sbs);
@@ -331,7 +329,7 @@ public class CfgPropsCompletionQuery extends AsyncCompletionQuery {
         }
     }
 
-    private String extractMapKeyType(ConfigurationMetadataProperty propMeta) {
+    private static String extractMapKeyType(ConfigurationMetadataProperty propMeta) {
         Matcher matcher = PATTERN_MAPKEY_DATATYPE.matcher(propMeta.getType());
         if (matcher.matches()) {
             final String dataType = matcher.group(1);
@@ -341,7 +339,7 @@ public class CfgPropsCompletionQuery extends AsyncCompletionQuery {
         return "";
     }
 
-    private String extractMapValueType(ConfigurationMetadataProperty propMeta) {
+    private static String extractMapValueType(ConfigurationMetadataProperty propMeta) {
         Matcher matcher = PATTERN_MAPVALUE_DATATYPE.matcher(propMeta.getType());
         if (matcher.matches()) {
             final String dataType = matcher.group(1);

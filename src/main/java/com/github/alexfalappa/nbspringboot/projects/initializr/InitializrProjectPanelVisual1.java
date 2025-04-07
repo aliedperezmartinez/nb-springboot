@@ -68,11 +68,10 @@ public class InitializrProjectPanelVisual1 extends JPanel implements DocumentLis
     private boolean failed = false;
     private boolean linkedArtifactName = true;
     private boolean linkedGroupArtifactPackage = true;
-    private FocusListener selectAllFocusListener = new FocusAdapter() {
+    private final FocusListener selectAllFocusListener = new FocusAdapter() {
         @Override
         public void focusGained(FocusEvent e) {
-            if (e.getSource() instanceof JTextField) {
-                JTextField tf = (JTextField) e.getSource();
+            if (e.getSource() instanceof JTextField tf) {
                 tf.selectAll();
             }
         }
@@ -88,30 +87,24 @@ public class InitializrProjectPanelVisual1 extends JPanel implements DocumentLis
         txDesc.addFocusListener(selectAllFocusListener);
         txPackage.addFocusListener(selectAllFocusListener);
         // unidirectionally link edits of group textfield with package textfield
-        addChangeListener(txGroup, new ChangeListener() {
-            @Override
-            public void stateChanged(ChangeEvent e) {
-                if (linkedGroupArtifactPackage) {
-                    String grp = txGroup.getText();
-                    String artf = txArtifact.getText();
-                    String pkg = String.format("%s.%s", grp, artf);
-                    txPackage.setText(pkg);
-                }
+        addChangeListener(txGroup, e -> {
+            if (linkedGroupArtifactPackage) {
+                String grp = txGroup.getText();
+                String artf = txArtifact.getText();
+                String pkg = String.format("%s.%s", grp, artf);
+                txPackage.setText(pkg);
             }
         });
         // unidirectionally link edits of artifact textfield with name and package textfields
-        addChangeListener(txArtifact, new ChangeListener() {
-            @Override
-            public void stateChanged(ChangeEvent e) {
-                String grp = txGroup.getText();
-                String artf = txArtifact.getText();
-                if (linkedArtifactName) {
-                    txName.setText(artf);
-                }
-                if (linkedGroupArtifactPackage) {
-                    String pkg = String.format("%s.%s", grp, artf);
-                    txPackage.setText(pkg);
-                }
+        addChangeListener(txArtifact, e -> {
+            String grp = txGroup.getText();
+            String artf = txArtifact.getText();
+            if (linkedArtifactName) {
+                txName.setText(artf);
+            }
+            if (linkedGroupArtifactPackage) {
+                String pkg = String.format("%s.%s", grp, artf);
+                txPackage.setText(pkg);
             }
         });
     }
@@ -465,13 +458,10 @@ public class InitializrProjectPanelVisual1 extends JPanel implements DocumentLis
             @Override
             public void changedUpdate(DocumentEvent e) {
                 lastChange++;
-                SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (lastNotifiedChange != lastChange) {
-                            lastNotifiedChange = lastChange;
-                            changeListener.stateChanged(new ChangeEvent(text));
-                        }
+                SwingUtilities.invokeLater(() -> {
+                    if (lastNotifiedChange != lastChange) {
+                        lastNotifiedChange = lastChange;
+                        changeListener.stateChanged(new ChangeEvent(text));
                     }
                 });
             }

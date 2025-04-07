@@ -19,11 +19,12 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.nio.charset.Charset;
+import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -41,23 +42,20 @@ public final class HintSupport {
     private static Set<String> cachedLocales = null;
     private final static FileSystemView fsView = FileSystemView.getFileSystemView();
     private final static Map<String, ImageIcon> iconCache = new HashMap<>();
-    public final static Set<String> MIMETYPES = new HashSet<>();
+    public final static Set<String> MIMETYPES = Set.of(
+        "*/*",
+        "application/json",
+        "application/octet-stream",
+        "application/xml",
+        "image/gif",
+        "image/jpeg",
+        "image/png",
+        "text/html",
+        "text/plain",
+        "text/xml");
 
     // prevent instantiation
     private HintSupport() {
-    }
-
-    static {
-        MIMETYPES.add("*/*");
-        MIMETYPES.add("application/json");
-        MIMETYPES.add("application/octet-stream");
-        MIMETYPES.add("application/xml");
-        MIMETYPES.add("image/gif");
-        MIMETYPES.add("image/jpeg");
-        MIMETYPES.add("image/png");
-        MIMETYPES.add("text/html");
-        MIMETYPES.add("text/plain");
-        MIMETYPES.add("text/xml");
     }
 
     /**
@@ -83,14 +81,10 @@ public final class HintSupport {
      */
     public static synchronized Set<String> getAllLocales() {
         if (cachedLocales == null) {
-            final Locale[] availableLocales = Locale.getAvailableLocales();
-            cachedLocales = new HashSet<>(availableLocales.length);
-            for (Locale loc : availableLocales) {
-                final String locName = loc.toString();
-                if (!locName.isEmpty()) {
-                    cachedLocales.add(locName);
-                }
-            }
+            cachedLocales = Arrays.stream(Locale.getAvailableLocales())
+                .map(Locale::toString)
+                .filter(locName -> !locName.isEmpty())
+                .collect(Collectors.toSet());
         }
         return cachedLocales;
     }
@@ -106,21 +100,18 @@ public final class HintSupport {
     public static synchronized ImageIcon getIconFor(File file) {
         Icon ico = fsView.getSystemIcon(file);
         final String key = ico.toString();
-        if (iconCache.containsKey(key)) {
-            return iconCache.get(key);
+        return iconCache.computeIfAbsent(key, k -> getImgIco(ico));
+    }
+
+    private static ImageIcon getImgIco(Icon ico) {
+        if (ico instanceof ImageIcon imageIcon) {
+            return imageIcon;
         } else {
-            ImageIcon imgIco;
-            if (ico instanceof ImageIcon) {
-                imgIco = (ImageIcon) ico;
-            } else {
-                BufferedImage image = new BufferedImage(ico.getIconWidth(), ico.getIconHeight(), BufferedImage.TYPE_INT_ARGB);
-                Graphics2D g2 = image.createGraphics();
-                ico.paintIcon(new JPanel(), g2, 0, 0);
-                g2.dispose();
-                imgIco = new ImageIcon(image);
-            }
-            iconCache.put(key, imgIco);
-            return imgIco;
+            BufferedImage image = new BufferedImage(ico.getIconWidth(), ico.getIconHeight(), BufferedImage.TYPE_INT_ARGB);
+            Graphics2D g2 = image.createGraphics();
+            ico.paintIcon(new JPanel(), g2, 0, 0);
+            g2.dispose();
+            return new ImageIcon(image);
         }
     }
 }

@@ -64,7 +64,7 @@ public class ClassReferenceHintProvider implements HintProvider {
         }
         boolean concrete = true;
         if (params.containsKey("concrete")) {
-            concrete = Boolean.valueOf(params.get("concrete").toString());
+            concrete = Boolean.parseBoolean(params.get("concrete").toString());
         }
         // search of classes extending class baseType
         ElementHandle<TypeElement> element = ElementHandle.createTypeElementHandle(ElementKind.CLASS, baseType);

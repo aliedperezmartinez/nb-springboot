@@ -18,8 +18,6 @@ package com.github.alexfalappa.nbspringboot.projects.initializr;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.apache.commons.collections4.ComparatorUtils;
-import org.springframework.util.comparator.Comparators;
 
 /**
  * Represents an artifact version of the form {@code MAJOR.MINOR.PATCH[-MODIFIER]} or {@code MAJOR.MINOR.PATCH[.MODIFIER]}.
@@ -30,13 +28,9 @@ import org.springframework.util.comparator.Comparators;
  *
  * @author Alessandro Falappa
  */
-public class ArtifactVersion implements Comparable<ArtifactVersion> {
+public record ArtifactVersion(int major, int minor, int patch, String modifier) implements Comparable<ArtifactVersion> {
 
     private static final Pattern PATTERN = Pattern.compile("^(\\d+)\\.(\\d+)\\.(\\d+)(?:[-.](.+))?$");
-    private final int major;
-    private final int minor;
-    private final int patch;
-    private final String modifier;
 
     public ArtifactVersion(int major, int minor, int patch) {
         this(major, minor, patch, null);

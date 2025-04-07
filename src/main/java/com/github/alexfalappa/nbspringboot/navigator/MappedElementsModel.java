@@ -42,29 +42,21 @@ public class MappedElementsModel extends AbstractTableModel {
 
     @Override
     public String getColumnName(int column) {
-        switch (column) {
-            case 0:
-                return Bundle.resourceUrl();
-            case 1:
-                return Bundle.requestMethod();
-            case 2:
-                return Bundle.handlerMethod();
-            default:
-                return null;
-        }
+        return switch (column) {
+            case 0 -> Bundle.resourceUrl();
+            case 1 -> Bundle.requestMethod();
+            case 2 -> Bundle.handlerMethod();
+            default -> null;
+        };
     }
 
     @Override
     public Class<?> getColumnClass(int column) {
-        switch (column) {
-            case 0:
-            case 2:
-                return String.class;
-            case 1:
-                return RequestMethod.class;
-            default:
-                return null;
-        }
+        return switch (column) {
+            case 0, 2 -> String.class;
+            case 1 -> RequestMethod.class;
+            default -> null;
+        };
     }
 
     @Override
@@ -80,16 +72,12 @@ public class MappedElementsModel extends AbstractTableModel {
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
         final MappedElement mappedElement = this.data.get(rowIndex);
-        switch (columnIndex) {
-            case 0:
-                return mappedElement.getResourceUrl();
-            case 1:
-                return mappedElement.getRequestMethod();
-            case 2:
-                return mappedElement.getHandlerMethod();
-            default:
-                return null;
-        }
+        return switch (columnIndex) {
+            case 0 -> mappedElement.getResourceUrl();
+            case 1 -> mappedElement.getRequestMethod();
+            case 2 -> mappedElement.getHandlerMethod();
+            default -> null;
+        };
     }
 
     public MappedElement getElementAt(final int rowIndex) {

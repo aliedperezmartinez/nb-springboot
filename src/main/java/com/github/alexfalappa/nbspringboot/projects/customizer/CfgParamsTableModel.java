@@ -20,6 +20,8 @@ import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
 
+import static java.util.stream.Collectors.toList;
+
 /**
  * An editable {@code JTable} model holding {@link CfgOverride} objects.
  * <p>
@@ -44,16 +46,12 @@ public class CfgParamsTableModel extends AbstractTableModel {
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
         CfgOverride co = overrides.get(rowIndex);
-        switch (columnIndex) {
-            case 0:
-                return co.enabled;
-            case 1:
-                return co.name;
-            case 2:
-                return co.value;
-            default:
-                return null;
-        }
+        return switch (columnIndex) {
+            case 0 -> co.enabled;
+            case 1 -> co.name;
+            case 2 -> co.value;
+            default -> null;
+        };
     }
 
     @Override
@@ -63,29 +61,21 @@ public class CfgParamsTableModel extends AbstractTableModel {
 
     @Override
     public String getColumnName(int columnIndex) {
-        switch (columnIndex) {
-            case 0:
-                return "En.";
-            case 1:
-                return "Name";
-            case 2:
-                return "Value";
-            default:
-                return super.getColumnName(columnIndex);
-        }
+        return switch (columnIndex) {
+            case 0 -> "En.";
+            case 1 -> "Name";
+            case 2 -> "Value";
+            default -> super.getColumnName(columnIndex);
+        };
     }
 
     @Override
     public Class<?> getColumnClass(int columnIndex) {
-        switch (columnIndex) {
-            case 0:
-                return Boolean.class;
-            case 1:
-            case 2:
-                return String.class;
-            default:
-                return null;
-        }
+        return switch (columnIndex) {
+            case 0 -> Boolean.class;
+            case 1, 2 -> String.class;
+            default -> null;
+        };
     }
 
     @Override
@@ -93,21 +83,21 @@ public class CfgParamsTableModel extends AbstractTableModel {
         if (rowIndex >= 0 && rowIndex < overrides.size()) {
             CfgOverride co = overrides.get(rowIndex);
             switch (columnIndex) {
-                case 0:
-                    if (aValue instanceof Boolean) {
-                        co.enabled = (Boolean) aValue;
+                case 0 -> {
+                    if (aValue instanceof Boolean aBoolean) {
+                        co.enabled = aBoolean;
                     }
-                    break;
-                case 1:
-                    if (aValue instanceof String) {
-                        co.name = (String) aValue;
+                }
+                case 1 -> {
+                    if (aValue instanceof String string) {
+                        co.name = string;
                     }
-                    break;
-                case 2:
-                    if (aValue instanceof String) {
-                        co.value = (String) aValue;
+                }
+                case 2 -> {
+                    if (aValue instanceof String string) {
+                        co.value = string;
                     }
-                    break;
+                }
             }
             fireTableCellUpdated(rowIndex, columnIndex);
         }
@@ -118,13 +108,9 @@ public class CfgParamsTableModel extends AbstractTableModel {
     }
 
     public List<CfgOverride> getEnabledOverrides() {
-        List<CfgOverride> ret = new LinkedList<>();
-        for (CfgOverride ov : overrides) {
-            if (ov.enabled) {
-                ret.add(ov);
-            }
-        }
-        return ret;
+        return overrides.stream()
+            .filter(ov -> ov.enabled)
+            .collect(toList());
     }
 
     public CfgOverride getOverrideAt(int idx) {

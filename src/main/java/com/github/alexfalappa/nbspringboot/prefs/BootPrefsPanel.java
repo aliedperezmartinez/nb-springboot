@@ -31,6 +31,8 @@ import org.openide.util.NbPreferences;
 
 import com.github.alexfalappa.nbspringboot.PrefConstants;
 import com.github.alexfalappa.nbspringboot.projects.initializr.InitializrService;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 /**
  * Plugin options panel.
@@ -343,13 +345,12 @@ final class BootPrefsPanel extends javax.swing.JPanel implements DocumentListene
 
     boolean valid() {
         // check whether form is consistent and complete
-        boolean ret = true;
         try {
-            URL url = new URL(txInitializrUrl.getText());
-        } catch (MalformedURLException ex) {
-            ret = false;
+            URL url = new URI(txInitializrUrl.getText()).toURL();
+        } catch (MalformedURLException | URISyntaxException ex) {
+            return false;
         }
-        return ret;
+        return true;
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

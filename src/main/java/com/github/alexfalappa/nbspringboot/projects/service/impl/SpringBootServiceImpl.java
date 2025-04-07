@@ -23,18 +23,14 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import static java.util.logging.Level.FINE;
-import static java.util.logging.Level.INFO;
-import static java.util.logging.Level.SEVERE;
-import static java.util.logging.Level.WARNING;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import static java.util.regex.Pattern.compile;
+import java.util.stream.Collectors;
+
 import org.netbeans.api.java.classpath.ClassPath;
 import org.netbeans.api.project.Project;
 import org.netbeans.modules.maven.NbMavenProjectImpl;
@@ -49,6 +45,12 @@ import org.springframework.boot.configurationmetadata.ConfigurationMetadataPrope
 import org.springframework.boot.configurationmetadata.ConfigurationMetadataRepository;
 import org.springframework.boot.configurationmetadata.ConfigurationMetadataRepositoryJsonBuilder;
 import org.springframework.boot.configurationmetadata.SimpleConfigurationMetadataRepository;
+
+import static java.util.logging.Level.FINE;
+import static java.util.logging.Level.INFO;
+import static java.util.logging.Level.SEVERE;
+import static java.util.logging.Level.WARNING;
+import static java.util.regex.Pattern.compile;
 
 /**
  * Project wide {@link SpringBootService} implementation.
@@ -87,9 +89,9 @@ public class SpringBootServiceImpl implements SpringBootService {
 
     public SpringBootServiceImpl(Project p) {
         final FileObject projectDirectory = p.getProjectDirectory();
-        if (p instanceof NbMavenProjectImpl) {
+        if (p instanceof NbMavenProjectImpl nbMavenProjectImpl) {
             logger.log(INFO, "Creating Spring Boot service for project {0}", FileUtil.getFileDisplayName(projectDirectory));
-            this.mvnPrj = (NbMavenProjectImpl) p;
+            this.mvnPrj = nbMavenProjectImpl;
             // check maven project is a spring-boot project
             logger.fine("Checking maven project has a spring boot dependency");
             springBootVersion = Utils.getSpringBootVersion(mvnPrj).orElse(null);
@@ -200,15 +202,12 @@ public class SpringBootServiceImpl implements SpringBootService {
         if (cpExec == null) {
             init();
         }
-        List<ConfigurationMetadataProperty> ret = new LinkedList<>();
-        if (cachedProperties != null) {
-            for (String propName : getPropertyNames()) {
-                if (filter == null || propName.contains(filter)) {
-                    ret.add(cachedProperties.get(propName));
-                }
-            }
-        }
-        return ret;
+        return (cachedProperties != null)?
+            getPropertyNames().stream()
+                .filter(propName -> (filter == null || propName.contains(filter)))
+                .map(cachedProperties::get)
+                .collect(Collectors.toList()):
+            List.of();
     }
 
     @Override
@@ -306,17 +305,17 @@ public class SpringBootServiceImpl implements SpringBootService {
                 try ( PrintWriter pw = new PrintWriter(foPrjDir.createAndOpen("nbactions.tmp"))) {
                     if (isBoot1()) {
                         for (String line : foNbAct.asLines()) {
-                            line = line.replace(ENV_RESTART, ENV_RESTART_15);
-                            line = line.replace("<spring-boot.run.", "<run.");
-                            line = line.replace("</spring-boot.run.", "</run.");
-                            pw.println(line);
+                            pw.println(
+                                line.replace(ENV_RESTART, ENV_RESTART_15)
+                                .replace("<spring-boot.run.", "<run.")
+                                .replace("</spring-boot.run.", "</run."));
                         }
-                    } else {                        
+                    } else {
                         for (String line : foNbAct.asLines()) {
-                            line = line.replace(ENV_RESTART_15, ENV_RESTART);
-                            line = line.replace("<run.", "<spring-boot.run.");
-                            line = line.replace("</run.", "</spring-boot.run.");
-                            pw.println(line);
+                            pw.println(
+                                line.replace(ENV_RESTART_15, ENV_RESTART)
+                                .replace("<run.", "<spring-boot.run.")
+                                .replace("</run.", "</spring-boot.run."));
                         }
                     }
                 }

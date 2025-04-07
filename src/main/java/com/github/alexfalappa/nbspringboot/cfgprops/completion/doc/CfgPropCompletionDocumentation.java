@@ -30,6 +30,7 @@ import org.springframework.boot.configurationmetadata.Hints;
 import org.springframework.boot.configurationmetadata.ValueHint;
 
 import com.github.alexfalappa.nbspringboot.Utils;
+import java.net.URI;
 
 import static com.github.alexfalappa.nbspringboot.Utils.simpleHtmlEscape;
 
@@ -43,6 +44,8 @@ import static com.github.alexfalappa.nbspringboot.Utils.simpleHtmlEscape;
  * @author Alessandro Falappa
  */
 public class CfgPropCompletionDocumentation implements CompletionDocumentation {
+
+    private static final URL URL = url();
 
     private final ConfigurationMetadataProperty configurationMeta;
 
@@ -85,8 +88,8 @@ public class CfgPropCompletionDocumentation implements CompletionDocumentation {
         final Object defaultValue = configurationMeta.getDefaultValue();
         if (null != defaultValue) {
             sb.append("<br/><br/><i>Default:</i> ");
-            if (defaultValue instanceof Object[]) {
-                sb.append(Arrays.toString((Object[]) defaultValue));
+            if (defaultValue instanceof Object[] objects) {
+                sb.append(Arrays.toString(objects));
             } else {
                 sb.append(String.valueOf(defaultValue));
             }
@@ -115,12 +118,7 @@ public class CfgPropCompletionDocumentation implements CompletionDocumentation {
 
     @Override
     public URL getURL() {
-        try {
-            return new URL("http://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#common-application-properties");
-        } catch (MalformedURLException ex) {
-            Exceptions.printStackTrace(ex);
-        }
-        return null;
+            return URL;
     }
 
     @Override
@@ -133,4 +131,12 @@ public class CfgPropCompletionDocumentation implements CompletionDocumentation {
         return null;
     }
 
+    private static URL url() {
+        try {
+            return URI.create("http://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#common-application-properties").toURL();
+        } catch (MalformedURLException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+        return null;
+    }
 }

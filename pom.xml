@@ -14,9 +14,8 @@
         <junit.version>5.12.0</junit.version>
         <netbeans.api.version>RELEASE250</netbeans.api.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <skipTests>true</skipTests>
-        <spring.framework.version>6.2.3</spring.framework.version>
         <spring.boot.version>3.4.3</spring.boot.version>
+        <spring.framework.version>6.2.3</spring.framework.version>
     </properties>
 
     <dependencies>
@@ -493,6 +492,25 @@
                     <nexusUrl>https://oss.sonatype.org/</nexusUrl>
                     <autoReleaseAfterClose>true</autoReleaseAfterClose>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.8.12</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>report</id>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                        <phase>prepare-package</phase>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

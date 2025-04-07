@@ -45,29 +45,26 @@ public class RequestMethodCellRenderer extends DefaultTableCellRenderer {
     private static final Color BG_PUT = new Color(214, 229, 252);
     private static final Color BG_SECONDARY = new Color(224, 224, 224);
     // color maps
-    private static final Map<RequestMethod, Color> fgColors = new EnumMap<>(RequestMethod.class);
-    private static final Map<RequestMethod, Color> bgColors = new EnumMap<>(RequestMethod.class);
-
-    static {
-        // setup foreground color map
-        fgColors.put(RequestMethod.DELETE, FG_DELETE);
-        fgColors.put(RequestMethod.GET, FG_GET);
-        fgColors.put(RequestMethod.HEAD, FG_SECONDARY);
-        fgColors.put(RequestMethod.OPTIONS, FG_SECONDARY);
-        fgColors.put(RequestMethod.PATCH, FG_SECONDARY);
-        fgColors.put(RequestMethod.POST, FG_POST);
-        fgColors.put(RequestMethod.PUT, FG_PUT);
-        fgColors.put(RequestMethod.TRACE, FG_SECONDARY);
-        // setup background color map
-        bgColors.put(RequestMethod.DELETE, BG_DELETE);
-        bgColors.put(RequestMethod.GET, BG_GET);
-        bgColors.put(RequestMethod.HEAD, BG_SECONDARY);
-        bgColors.put(RequestMethod.OPTIONS, BG_SECONDARY);
-        bgColors.put(RequestMethod.PATCH, BG_SECONDARY);
-        bgColors.put(RequestMethod.POST, BG_POST);
-        bgColors.put(RequestMethod.PUT, BG_PUT);
-        bgColors.put(RequestMethod.TRACE, BG_SECONDARY);
-    }
+    // setup foreground color map
+    private static final Map<RequestMethod, Color> fgColors = new EnumMap<>(Map.of(
+        RequestMethod.DELETE, FG_DELETE,
+        RequestMethod.GET, FG_GET,
+        RequestMethod.HEAD, FG_SECONDARY,
+        RequestMethod.OPTIONS, FG_SECONDARY,
+        RequestMethod.PATCH, FG_SECONDARY,
+        RequestMethod.POST, FG_POST,
+        RequestMethod.PUT, FG_PUT,
+        RequestMethod.TRACE, FG_SECONDARY));
+    // setup background color map
+    private static final Map<RequestMethod, Color> bgColors = new EnumMap<>(Map.of(
+        RequestMethod.DELETE, BG_DELETE,
+        RequestMethod.GET, BG_GET,
+        RequestMethod.HEAD, BG_SECONDARY,
+        RequestMethod.OPTIONS, BG_SECONDARY,
+        RequestMethod.PATCH, BG_SECONDARY,
+        RequestMethod.POST, BG_POST,
+        RequestMethod.PUT, BG_PUT,
+        RequestMethod.TRACE, BG_SECONDARY));
 
     /**
      * Customize foreground colors.
@@ -97,8 +94,7 @@ public class RequestMethodCellRenderer extends DefaultTableCellRenderer {
             if (value == null) {
                 setForeground(table.getForeground());
                 setBackground(table.getBackground());
-            } else if (value instanceof RequestMethod) {
-                final RequestMethod reqMethod = (RequestMethod) value;
+            } else if (value instanceof RequestMethod reqMethod) {
                 setForeground(fgColors.get(reqMethod));
                 setBackground(bgColors.get(reqMethod));
             }

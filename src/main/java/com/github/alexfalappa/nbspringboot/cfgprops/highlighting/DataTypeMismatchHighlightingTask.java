@@ -52,8 +52,8 @@ import org.springframework.core.convert.TypeDescriptor;
  */
 public class DataTypeMismatchHighlightingTask extends BaseHighlightingTask {
 
-    private final Pattern pOneGenTypeArg = compile("([^<>]+)<(.+)>");
-    private final Pattern pTwoGenTypeArgs = compile("([^<>]+)<(.+),(.+)>");
+    private static final Pattern pOneGenTypeArg = compile("([^<>]+)<(.+)>");
+    private static final Pattern pTwoGenTypeArgs = compile("([^<>]+)<(.+),(.+)>");
     private final ApplicationConversionService conversionService = new ApplicationConversionService();
 
     @Override

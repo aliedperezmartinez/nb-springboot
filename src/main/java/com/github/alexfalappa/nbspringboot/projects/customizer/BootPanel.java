@@ -24,8 +24,6 @@ import java.util.logging.Logger;
 import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
 import javax.swing.table.TableColumn;
 
 import org.netbeans.modules.maven.api.customizer.ModelHandle2;
@@ -160,11 +158,8 @@ public class BootPanel extends javax.swing.JPanel {
                     updateVmOptions();
                 }
             });
-            tmOverrides.addTableModelListener(new TableModelListener() {
-                @Override
-                public void tableChanged(TableModelEvent e) {
-                    updateCmdLineArgs();
-                }
+            tmOverrides.addTableModelListener(e -> {
+                updateCmdLineArgs();
             });
             // enable widgets
             lLaunchOpts.setEnabled(true);

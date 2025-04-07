@@ -199,9 +199,7 @@ public class InitializrProjectWizardIterator implements WizardDescriptor.Progres
                 // chooser to appear in the list of steps.
                 steps[i] = c.getName();
             }
-            if (c instanceof JComponent) {
-                // assume Swing components
-                JComponent jc = (JComponent) c;
+            if (c instanceof JComponent jc) {
                 // Step #.
                 jc.putClientProperty(WizardDescriptor.PROP_CONTENT_SELECTED_INDEX, i);
                 // Step name (actually the whole list for reference).
@@ -275,7 +273,7 @@ public class InitializrProjectWizardIterator implements WizardDescriptor.Progres
     }
 
     private static void unZipFile(InputStream source, FileObject projectRoot, boolean removeMvnWrapper) throws IOException {
-        try {
+        try (source) {
             ZipInputStream str = new ZipInputStream(source);
             ZipEntry entry;
             while ((entry = str.getNextEntry()) != null) {
@@ -296,8 +294,6 @@ public class InitializrProjectWizardIterator implements WizardDescriptor.Progres
                     }
                 }
             }
-        } finally {
-            source.close();
         }
     }
 

@@ -20,17 +20,7 @@ package com.github.alexfalappa.nbspringboot.cfgprops.parser;
  *
  * @author Alessandro Falappa
  */
-public class CfgPropLine {
-
-    private final int line;
-    private final String key;
-    private final String value;
-
-    public CfgPropLine(int line, String key, String value) {
-        this.line = line;
-        this.key = key;
-        this.value = value;
-    }
+public record CfgPropLine(int line, String key, String value) {
 
     public int getLine() {
         return line;

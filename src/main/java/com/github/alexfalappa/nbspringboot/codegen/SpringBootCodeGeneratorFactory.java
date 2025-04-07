@@ -52,7 +52,7 @@ public class SpringBootCodeGeneratorFactory implements CodeGenerator.Factory {
     }
 
     // check if there is at least a dependency whose artifactId contains 'spring-boot-starter'
-    private boolean hasBootStarter(POMModel model) {
+    private static boolean hasBootStarter(POMModel model) {
         if (model.getProject().getDependencies() != null) {
             for (Dependency dep : model.getProject().getDependencies()) {
                 if (dep.getArtifactId().contains("spring-boot-starter")) {

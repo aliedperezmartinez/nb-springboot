@@ -19,13 +19,15 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.VariableElement;
 
-import org.apache.commons.collections4.SetValuedMap;
-import org.apache.commons.collections4.multimap.HashSetValuedHashMap;
 import org.netbeans.api.java.source.ElementHandle;
 import org.openide.filesystems.FileObject;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.github.alexfalappa.nbspringboot.Utils;
+import java.util.List;
+import java.util.Map;
+
+import static java.util.stream.Collectors.groupingBy;
 
 /**
  * This is a source code element of kind METHOD which is mapped by {@code @RequestMapping} or derivations thereof.
@@ -33,20 +35,10 @@ import com.github.alexfalappa.nbspringboot.Utils;
  * @author Michael J. Simons, 2016-09-16
  * @author Alessandro Falappa
  */
-public final class MappedElement {
-
-    private final FileObject fileObject;
-    private final ElementHandle<Element> handle;
-    private final String handlerMethod;
-    private final String resourceUrl;
-    private final RequestMethod requestMethod;
+public record MappedElement(FileObject fileObject, ElementHandle<Element> handle, String handlerMethod, String resourceUrl, RequestMethod requestMethod) {
 
     public MappedElement(final FileObject fileObject, final Element element, final String url, final RequestMethod method) {
-        this.fileObject = fileObject;
-        this.handle = ElementHandle.create(element);
-        this.handlerMethod = computeHandlerSignature(element);
-        this.resourceUrl = url;
-        this.requestMethod = method;
+        this(fileObject, ElementHandle.create(element), computeHandlerSignature(element), url, method);
     }
 
     public FileObject getFileObject() {
@@ -69,20 +61,18 @@ public final class MappedElement {
         return requestMethod;
     }
 
-    private final String computeHandlerSignature(Element element) {
-        StringBuilder sb = new StringBuilder(element.getSimpleName());
-        if (element instanceof ExecutableElement) {
-            // store arguments with same unqualified type name
-            ExecutableElement eel = (ExecutableElement) element;
-            SetValuedMap<String, String> mm = new HashSetValuedHashMap<>();
-            for (VariableElement var : eel.getParameters()) {
-                String fullType = var.asType().toString();
-                mm.put(Utils.shortenJavaType(fullType), fullType);
-            }
+    private static String computeHandlerSignature(Element element) {
+        final StringBuilder sb = new StringBuilder(element.getSimpleName());
+        if (element instanceof ExecutableElement eel) {
+            final List<? extends VariableElement> parameters = eel.getParameters();
+// store arguments with same unqualified type name
+            final Map<String, List<String>> mm = parameters.stream()
+                .map(var -> var.asType().toString())
+                .collect(groupingBy(Utils::shortenJavaType));
             // build up argument list
             sb.append('(');
-            for (int i = 0; i < eel.getParameters().size(); i++) {
-                VariableElement var = eel.getParameters().get(i);
+            for (int i = 0; i < parameters.size(); i++) {
+                VariableElement var = parameters.get(i);
                 String fullType = var.asType().toString();
                 final String shortType = Utils.shortenJavaType(fullType);
                 if (mm.get(shortType).size() > 1) {
@@ -90,7 +80,7 @@ public final class MappedElement {
                 } else {
                     sb.append(shortType);
                 }
-                if (i < eel.getParameters().size() - 1) {
+                if (i < parameters.size() - 1) {
                     sb.append(", ");
                 }
             }

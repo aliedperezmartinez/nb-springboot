@@ -67,17 +67,14 @@ public class ElementScanningTaskFactory extends LookupBasedJavaSourceTaskFactory
             final CompilationUnitTree compilationUnitTree = p.getCompilationUnit();
             final TreePath rootPath = new TreePath(compilationUnitTree);
             mappedElementExtractor = new MappedElementExtractor(p.getFileObject(), compilationUnitTree, p.getTrees(), rootPath);
-            SwingUtilities.invokeLater(new Runnable() {
-                @Override
-                public void run() {
-                    targetModel.refresh(compilationUnitTree.accept(mappedElementExtractor, null));
-                    table.setModel(targetModel);
-                }
+            SwingUtilities.invokeLater(() -> {
+                targetModel.refresh(compilationUnitTree.accept(mappedElementExtractor, null));
+                table.setModel(targetModel);
             });
         }
     }
 
-    private final CancellableTask<CompilationInfo> EMPTY_TASK = new CancellableTask<CompilationInfo>() {
+    private static final CancellableTask<CompilationInfo> EMPTY_TASK = new CancellableTask<CompilationInfo>() {
         @Override
         public void cancel() {
         }

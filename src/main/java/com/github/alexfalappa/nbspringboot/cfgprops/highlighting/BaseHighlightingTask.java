@@ -39,7 +39,7 @@ import com.github.alexfalappa.nbspringboot.cfgprops.parser.CfgPropsParser;
  */
 public abstract class BaseHighlightingTask extends ParserResultTask<CfgPropsParser.CfgPropsParserResult> {
 
-    protected final Logger logger = Logger.getLogger(getClass().getName());
+    protected static final Logger logger = Logger.getLogger(BaseHighlightingTask.class.getName());
     protected volatile boolean canceled = false;
 
     @Override
@@ -83,14 +83,11 @@ public abstract class BaseHighlightingTask extends ParserResultTask<CfgPropsPars
     protected abstract void internalRun(CfgPropsParser.CfgPropsParserResult cfgResult, SchedulerEvent se, BaseDocument document,
             List<ErrorDescription> errors, Severity severity);
 
-    private Severity decodeSeverity(int level) {
-        switch (level) {
-            case 1:
-                return Severity.WARNING;
-            case 2:
-                return Severity.ERROR;
-            default:
-                throw new AssertionError();
-        }
+    private static Severity decodeSeverity(int level) {
+        return switch (level) {
+            case 1 -> Severity.WARNING;
+            case 2 -> Severity.ERROR;
+            default -> throw new AssertionError();
+        };
     }
 }

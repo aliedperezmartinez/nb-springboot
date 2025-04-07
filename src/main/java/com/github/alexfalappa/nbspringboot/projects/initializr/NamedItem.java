@@ -24,20 +24,14 @@ import java.util.Objects;
  *
  * @author Alessandro Falappa
  */
-class NamedItem {
+record NamedItem(String id, String name) {
 
-    private final String id;
-    private final String name;
-
-    public NamedItem(String id, String name) {
-        this.id = id;
-        this.name = name;
-    }
-
+    @Deprecated
     public String getId() {
         return id;
     }
 
+    @Deprecated
     public String getName() {
         return name;
     }

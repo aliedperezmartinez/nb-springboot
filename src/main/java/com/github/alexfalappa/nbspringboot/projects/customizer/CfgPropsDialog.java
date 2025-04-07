@@ -16,7 +16,6 @@
 package com.github.alexfalappa.nbspringboot.projects.customizer;
 
 import java.awt.Component;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -33,8 +32,6 @@ import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.text.html.HTMLEditorKit;
 
 import org.openide.util.NbPreferences;
@@ -76,26 +73,20 @@ public class CfgPropsDialog extends javax.swing.JDialog {
         // setup props sorting
         this.sortedProps = new TreeSet<>(new ConfigurationMetadataComparator(bDeprLast));
         // setup property list
-        lCfgProps.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-            @Override
-            public void valueChanged(ListSelectionEvent e) {
-                if (!e.getValueIsAdjusting()) {
-                    final ConfigurationMetadataProperty selectedValue = lCfgProps.getSelectedValue();
-                    if (selectedValue != null) {
-                        tpDetails.setText(Utils.cfgPropDetailsHtml(selectedValue));
-                        tpDetails.setCaretPosition(0);
-                    }
+        lCfgProps.getSelectionModel().addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting()) {
+                final ConfigurationMetadataProperty selectedValue = lCfgProps.getSelectedValue();
+                if (selectedValue != null) {
+                    tpDetails.setText(Utils.cfgPropDetailsHtml(selectedValue));
+                    tpDetails.setCaretPosition(0);
                 }
             }
         });
         // set default button
         rootPane.setDefaultButton(bOk);
         // close dialog with ESC key
-        final ActionListener escAction = new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent ae) {
-                CfgPropsDialog.this.setVisible(false);
-            }
+        final ActionListener escAction = ae -> {
+            CfgPropsDialog.this.setVisible(false);
         };
         rootPane.registerKeyboardAction(escAction, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
                 JComponent.WHEN_IN_FOCUSED_WINDOW);
@@ -277,8 +268,7 @@ public class CfgPropsDialog extends javax.swing.JDialog {
         public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
                 boolean cellHasFocus) {
             super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-            if (value instanceof ConfigurationMetadataProperty) {
-                ConfigurationMetadataProperty prop = (ConfigurationMetadataProperty) value;
+            if (value instanceof ConfigurationMetadataProperty prop) {
                 if (prop.isDeprecated()) {
                     setText(String.format("<html><s>%s", prop.getId()));
                     if (Utils.isErrorDeprecated(prop)) {
@@ -368,7 +358,7 @@ public class CfgPropsDialog extends javax.swing.JDialog {
                 final int pageStep = lCfgProps.getVisibleRowCount();
                 // calculate new index
                 switch (keyCode) {
-                    case KeyEvent.VK_PAGE_UP:
+                    case KeyEvent.VK_PAGE_UP -> {
                         selIdx -= pageStep;
                         // clamp to [0 : size-1] range
                         if (selIdx < 0) {
@@ -376,8 +366,8 @@ public class CfgPropsDialog extends javax.swing.JDialog {
                         } else if (selIdx >= size) {
                             selIdx = size - 1;
                         }
-                        break;
-                    case KeyEvent.VK_UP:
+                    }
+                    case KeyEvent.VK_UP -> {
                         selIdx -= 1;
                         // wrap if needed
                         if (selIdx < 0) {
@@ -385,8 +375,8 @@ public class CfgPropsDialog extends javax.swing.JDialog {
                         } else if (selIdx >= size) {
                             selIdx -= size;
                         }
-                        break;
-                    case KeyEvent.VK_DOWN:
+                    }
+                    case KeyEvent.VK_DOWN -> {
                         selIdx += 1;
                         // wrap if needed
                         if (selIdx < 0) {
@@ -394,8 +384,8 @@ public class CfgPropsDialog extends javax.swing.JDialog {
                         } else if (selIdx >= size) {
                             selIdx -= size;
                         }
-                        break;
-                    case KeyEvent.VK_PAGE_DOWN:
+                    }
+                    case KeyEvent.VK_PAGE_DOWN -> {
                         selIdx += pageStep;
                         // clamp to [0 : size-1] range
                         if (selIdx < 0) {
@@ -403,7 +393,7 @@ public class CfgPropsDialog extends javax.swing.JDialog {
                         } else if (selIdx >= size) {
                             selIdx = size - 1;
                         }
-                        break;
+                    }
                 }
                 // move properties list selection and scroll to it
                 lCfgProps.setSelectedIndex(selIdx);

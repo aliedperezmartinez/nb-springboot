@@ -48,7 +48,7 @@ public class BootRecommendedTemplates implements RecommendedTemplates {
         BOOT, CONTEXT, WEB, DATA, WEBFLUX, ACTUATOR
     }
 
-    private Project prj;
+    private final Project prj;
 
     public BootRecommendedTemplates(Project prj) {
         this.prj = prj;
@@ -58,31 +58,20 @@ public class BootRecommendedTemplates implements RecommendedTemplates {
     public String[] getRecommendedTypes() {
         NbMavenProject project = prj.getLookup().lookup(NbMavenProject.class);
         EnumSet<SpringDeps> deps = EnumSet.noneOf(SpringDeps.class);
-        List compileArtifacts = project.getMavenProject().getCompileArtifacts();
+        List<Artifact> compileArtifacts = project.getMavenProject().getCompileArtifacts();
         for (Object obj : compileArtifacts) {
-            if (obj instanceof Artifact) {
-                Artifact artifact = (Artifact) obj;
+            if (obj instanceof Artifact artifact) {
                 if (artifact.getScope().equals(Artifact.SCOPE_COMPILE)) {
                     final String artifactId = artifact.getArtifactId();
                     if (artifactId.contains("spring-data")) {
                         deps.add(SpringDeps.DATA);
                     }
                     switch (artifactId) {
-                        case "spring-context":
-                            deps.add(SpringDeps.CONTEXT);
-                            break;
-                        case "spring-web":
-                            deps.add(SpringDeps.WEB);
-                            break;
-                        case "spring-webflux":
-                            deps.add(SpringDeps.WEBFLUX);
-                            break;
-                        case "spring-boot":
-                            deps.add(SpringDeps.BOOT);
-                            break;
-                        case "spring-boot-actuator":
-                            deps.add(SpringDeps.ACTUATOR);
-                            break;
+                        case "spring-context" -> deps.add(SpringDeps.CONTEXT);
+                        case "spring-web" -> deps.add(SpringDeps.WEB);
+                        case "spring-webflux" -> deps.add(SpringDeps.WEBFLUX);
+                        case "spring-boot" -> deps.add(SpringDeps.BOOT);
+                        case "spring-boot-actuator" -> deps.add(SpringDeps.ACTUATOR);
                     }
                 }
             }
@@ -106,7 +95,7 @@ public class BootRecommendedTemplates implements RecommendedTemplates {
         if (deps.contains(SpringDeps.ACTUATOR)) {
             recomTypes.add(CATEGORY_SPRING_BOOT_ACTUATOR);
         }
-        return recomTypes.toArray(new String[0]);
+        return recomTypes.toArray(String[]::new);
     }
 
 }
