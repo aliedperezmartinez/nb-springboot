@@ -26,16 +26,6 @@ import java.util.Objects;
  */
 record NamedItem(String id, String name) {
 
-    @Deprecated
-    public String getId() {
-        return id;
-    }
-
-    @Deprecated
-    public String getName() {
-        return name;
-    }
-
     @Override
     public String toString() {
         return name;

@@ -114,16 +114,16 @@ public class InitializrProjectWizardIterator implements WizardDescriptor.Progres
         dirF.mkdirs();
         FileObject foDir = FileUtil.toFileObject(dirF);
         // prepare service invocation params
-        String bootVersion = ((NamedItem) wiz.getProperty(WIZ_BOOT_VERSION)).getId();
+        String bootVersion = ((NamedItem) wiz.getProperty(WIZ_BOOT_VERSION)).id();
         String mvnGroup = (String) wiz.getProperty(WIZ_GROUP);
         String mvnArtifact = (String) wiz.getProperty(WIZ_ARTIFACT);
         String mvnVersion = (String) wiz.getProperty(WIZ_VERSION);
         String mvnName = (String) wiz.getProperty(WIZ_NAME);
         String mvnDesc = (String) wiz.getProperty(WIZ_DESCRIPTION);
-        String packaging = ((NamedItem) wiz.getProperty(WIZ_PACKAGING)).getId();
+        String packaging = ((NamedItem) wiz.getProperty(WIZ_PACKAGING)).id();
         String pkg = (String) wiz.getProperty(WIZ_PACKAGE);
-        String lang = ((NamedItem) wiz.getProperty(WIZ_LANGUAGE)).getId();
-        String javaVersion = ((NamedItem) wiz.getProperty(WIZ_JAVA_VERSION)).getId();
+        String lang = ((NamedItem) wiz.getProperty(WIZ_LANGUAGE)).id();
+        String javaVersion = ((NamedItem) wiz.getProperty(WIZ_JAVA_VERSION)).id();
         String deps = (String) wiz.getProperty(WIZ_DEPENDENCIES);
         handle.progress(1);
         try {

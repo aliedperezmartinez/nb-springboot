@@ -170,7 +170,7 @@ public class InitializrProjectPanelVisual2 extends JPanel {
 
     private void cbBootVersionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbBootVersionActionPerformed
         final NamedItem bootVersionItem = cbBootVersion.getItemAt(cbBootVersion.getSelectedIndex());
-        pBootDependencies.adaptToBootVersion(bootVersionItem.getId());
+        pBootDependencies.adaptToBootVersion(bootVersionItem.id());
     }//GEN-LAST:event_cbBootVersionActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
