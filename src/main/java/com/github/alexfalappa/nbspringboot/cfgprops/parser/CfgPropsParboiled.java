@@ -104,20 +104,19 @@ public class CfgPropsParboiled extends BaseParser<CfgElement> {
             if (!context.hasError()) {
                 int size = stack.size();
                 switch (size) {
-                    case 1:
+                    case 1 -> {
                         CfgElement elemKey = stack.pop();
                         parsedProps.setProperty(unescape(elemKey.getText()), "");
                         cfgFile.getElements().add(new PairElement(elemKey));
-                        break;
-                    case 2:
+                    }
+                    case 2 -> {
                         // NOTE: stack popping order below is important!
                         final CfgElement elemValue = stack.pop();
-                        elemKey = stack.pop();
+                        CfgElement elemKey = stack.pop();
                         parsedProps.setProperty(unescape(elemKey.getText()), unescape(elemValue.getText()));
                         cfgFile.getElements().add(new PairElement(elemKey, elemValue));
-                        break;
-                    default:
-                        throw new IllegalStateException(String.format("Cannot manage %d values on the parsing stack", size));
+                    }
+                    default -> throw new IllegalStateException(String.format("Cannot manage %d values on the parsing stack", size));
                 }
             } else {
                 stack.clear();
@@ -301,15 +300,13 @@ public class CfgPropsParboiled extends BaseParser<CfgElement> {
     }
 
     String uniToStr(String str) {
-        String ret = "";
-        int codePoint = 0;
         try {
-            codePoint = Integer.parseInt(str, 16);
-            ret = new String(Character.toChars(codePoint));
+            int codePoint = Integer.parseInt(str, 16);
+            return new String(Character.toChars(codePoint));
         } catch (NumberFormatException ex) {
             // may happen while typing a partial edit. Ignore.
         }
-        return ret;
+        return "";
     }
 
     private String unescape(String text) {
@@ -323,32 +320,15 @@ public class CfgPropsParboiled extends BaseParser<CfgElement> {
         sb = new StringBuffer();
         while (m.find()) {
             switch (m.group()) {
-                case "\\:":
-                    m.appendReplacement(sb, ":");
-                    break;
-                case "\\=":
-                    m.appendReplacement(sb, "=");
-                    break;
-                case "\\#":
-                    m.appendReplacement(sb, "#");
-                    break;
-                case "\\!":
-                    m.appendReplacement(sb, "!");
-                    break;
-                case "\\n":
-                    m.appendReplacement(sb, "\n");
-                    break;
-                case "\\t":
-                    m.appendReplacement(sb, "\t");
-                    break;
-                case "\\ ":
-                    m.appendReplacement(sb, " ");
-                    break;
-                case "\\\\":
-                    m.appendReplacement(sb, "\\\\");
-                    break;
-                default:
-                    m.appendReplacement(sb, m.group().substring(1));
+                case "\\:" -> m.appendReplacement(sb, ":");
+                case "\\=" -> m.appendReplacement(sb, "=");
+                case "\\#" -> m.appendReplacement(sb, "#");
+                case "\\!" -> m.appendReplacement(sb, "!");
+                case "\\n" -> m.appendReplacement(sb, "\n");
+                case "\\t" -> m.appendReplacement(sb, "\t");
+                case "\\ " -> m.appendReplacement(sb, " ");
+                case "\\\\" -> m.appendReplacement(sb, "\\\\");
+                default -> m.appendReplacement(sb, m.group().substring(1));
             }
         }
         m.appendTail(sb);
