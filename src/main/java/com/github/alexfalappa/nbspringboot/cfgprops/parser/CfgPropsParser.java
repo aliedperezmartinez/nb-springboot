@@ -36,6 +36,7 @@ import org.parboiled.support.ParsingResult;
 import com.github.alexfalappa.nbspringboot.cfgprops.ast.CfgElement;
 import com.github.alexfalappa.nbspringboot.cfgprops.ast.CfgFile;
 import com.github.alexfalappa.nbspringboot.cfgprops.ast.PairElement;
+import java.util.Collections;
 
 /**
  * NetBeans Parsing and Lexing API parser for integrating the Parboiled parser.
@@ -132,7 +133,7 @@ public class CfgPropsParser extends Parser {
 
         @Override
         public List<? extends Error> getDiagnostics() {
-            return List.of();
+            return Collections.emptyList();
         }
 
     }

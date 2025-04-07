@@ -118,7 +118,7 @@ public abstract class Yenta extends ModuleInstall {
                 Field friendNamesF = Class.forName("org.netbeans.ModuleData", true, data.getClass().getClassLoader()).getDeclaredField("friendNames");
                 friendNamesF.setAccessible(true);
                 Set<?> names = (Set<?>) friendNamesF.get(data);
-                Set<Object> newNames = new HashSet<Object>(names);
+                Set<Object> newNames = new HashSet<>(names);
                 newNames.add(me.getCodeNameBase());
                 friendNamesF.set(data, newNames);
             }
@@ -159,7 +159,7 @@ public abstract class Yenta extends ModuleInstall {
         }
     }
 
-    private ModuleInfo findDependency(/*ModuleManager*/Object manager, String m) throws Exception {
+    private static ModuleInfo findDependency(/*ModuleManager*/Object manager, String m) throws Exception {
         Object dep = manager.getClass().getMethod("get", String.class).invoke(manager, m);
         if (dep == null) {
             throw new IllegalStateException("No such dependency " + m);
@@ -167,7 +167,7 @@ public abstract class Yenta extends ModuleInstall {
         return (ModuleInfo) dep;
     }
 
-    private Object data(ModuleInfo module) throws Exception {
+    private static Object data(ModuleInfo module) throws Exception {
         Method dataM = Class.forName("org.netbeans.Module", true, module.getClass().getClassLoader()).getDeclaredMethod("data");
         dataM.setAccessible(true);
         return dataM.invoke(module);
