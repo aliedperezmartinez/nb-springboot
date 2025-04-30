@@ -22,30 +22,26 @@ package com.github.alexfalappa.nbspringboot.cfgprops.ast;
  *
  * @author Alessandro Falappa
  */
-public class PairElement implements Comparable<PairElement> {
-
-    private final CfgElement key;
-    private CfgElement value;
+public record PairElement(CfgElement key, CfgElement value) implements Comparable<PairElement> {
 
     public PairElement(CfgElement key) {
-        this.key = key;
+        this(key, null);
     }
 
-    public PairElement(CfgElement key, CfgElement value) {
-        this.key = key;
-        this.value = value;
-    }
-
+    /**
+     * @deprecated Use record's {@link PairElement#key}
+     */
+    @Deprecated
     public CfgElement getKey() {
-        return key;
+        return key();
     }
 
+    /**
+     * @deprecated Use record's {@link PairElement#key}
+     */
+    @Deprecated
     public CfgElement getValue() {
-        return value;
-    }
-
-    public void setValue(CfgElement value) {
-        this.value = value;
+        return value();
     }
 
     @Override
