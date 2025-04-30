@@ -15,7 +15,7 @@
  */
 package com.github.alexfalappa.nbspringboot.projects.initializr;
 
-import java.util.ArrayList;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -55,6 +55,13 @@ public class ArtifactVersionTest {
     }
 
     @Test
+    public void testEqualsSame() {
+        final ArtifactVersion a1 = new ArtifactVersion(1, 1, 3, "SNAPSHOT");
+        System.out.format("%s equals %s\n", a1, a1);
+        assertEquals(a1, a1);
+    }
+
+    @Test
     public void testNotEquals1() {
         final ArtifactVersion a1 = new ArtifactVersion(1, 4, 2);
         final ArtifactVersion a2 = new ArtifactVersion(1, 4, 2, "M1");
@@ -66,6 +73,46 @@ public class ArtifactVersionTest {
     public void testNotEquals2() {
         final ArtifactVersion a1 = new ArtifactVersion(1, 4, 2, "M2");
         final ArtifactVersion a2 = new ArtifactVersion(1, 4, 2, "M1");
+        System.out.format("%s not equals %s\n", a1, a2);
+        assertNotEquals(a1, a2);
+    }
+
+    @Test
+    public void testNotEqualsMajor() {
+        final ArtifactVersion a1 = new ArtifactVersion(2, 4, 2);
+        final ArtifactVersion a2 = new ArtifactVersion(1, 4, 2);
+        System.out.format("%s not equals %s\n", a1, a2);
+        assertNotEquals(a1, a2);
+    }
+
+    @Test
+    public void testNotEqualsMinor() {
+        final ArtifactVersion a1 = new ArtifactVersion(1, 5, 2);
+        final ArtifactVersion a2 = new ArtifactVersion(1, 4, 2);
+        System.out.format("%s not equals %s\n", a1, a2);
+        assertNotEquals(a1, a2);
+    }
+
+    @Test
+    public void testNotEqualsPatch() {
+        final ArtifactVersion a1 = new ArtifactVersion(1, 4, 3);
+        final ArtifactVersion a2 = new ArtifactVersion(1, 4, 2);
+        System.out.format("%s not equals %s\n", a1, a2);
+        assertNotEquals(a1, a2);
+    }
+
+    @Test
+    public void testNotEqualsNull() {
+        final ArtifactVersion a1 = new ArtifactVersion(1, 4, 2, "M2");
+        final ArtifactVersion a2 = null;
+        System.out.format("%s not equals %s\n", a1, a2);
+        assertNotEquals(a1, a2);
+    }
+
+    @Test
+    public void testNotEqualsOther() {
+        final ArtifactVersion a1 = new ArtifactVersion(1, 4, 2, "M2");
+        final Object a2 = new Object();
         System.out.format("%s not equals %s\n", a1, a2);
         assertNotEquals(a1, a2);
     }
@@ -120,17 +167,21 @@ public class ArtifactVersionTest {
     }
 
     @Test
-    public void testOf7() {
-        String versionString = "-1.2.3";
-        System.out.println("of " + versionString);
-        assertThrows(IllegalArgumentException.class, () -> ArtifactVersion.of(versionString));
+    public void testNegativeMajor() {
+        assertEquals("Negative major version",
+            assertThrows(IllegalArgumentException.class, () -> new ArtifactVersion(-1, 2, 3)).getMessage());
     }
 
     @Test
-    public void testOf8() {
-        String versionString = "1.-2.3";
-        System.out.println("of " + versionString);
-        assertThrows(IllegalArgumentException.class, () -> ArtifactVersion.of(versionString));
+    public void testNegativeMinor() {
+        assertEquals("Negative minor version",
+            assertThrows(IllegalArgumentException.class, () -> new ArtifactVersion(1, -2, 3)).getMessage());
+    }
+
+    @Test
+    public void testNegativePatch() {
+        assertEquals("Negative patch version",
+            assertThrows(IllegalArgumentException.class, () -> new ArtifactVersion(1, 2, -3)).getMessage());
     }
 
     @Test
@@ -199,37 +250,39 @@ public class ArtifactVersionTest {
 
     @Test
     public void testCollectionSort() {
-        ArrayList<ArtifactVersion> versions = new ArrayList<>();
-        versions.add(ArtifactVersion.of("2.4.0-M1"));
-        versions.add(ArtifactVersion.of("2.3.0-M1"));
-        versions.add(ArtifactVersion.of("2.3.0-RC2"));
-        versions.add(ArtifactVersion.of("2.3.0-M2"));
-        versions.add(ArtifactVersion.of("2.3.1"));
-        versions.add(ArtifactVersion.of("2.4.0"));
-        versions.add(ArtifactVersion.of("2.3.0-SNAPSHOT"));
-        versions.add(ArtifactVersion.of("2.4.0-RC1"));
-        versions.add(ArtifactVersion.of("2.3.1-SNAPSHOT"));
-        versions.add(ArtifactVersion.of("2.4.0-M2"));
-        versions.add(ArtifactVersion.of("2.3.0-RC1"));
-        versions.add(ArtifactVersion.of("2.4.0-SNAPSHOT"));
-        versions.add(ArtifactVersion.of("2.3.0"));
+        final List<ArtifactVersion> versions = List.of(
+                ArtifactVersion.of("2.4.0-M1"),
+                ArtifactVersion.of("2.3.0-M1"),
+                ArtifactVersion.of("2.3.0-RC2"),
+                ArtifactVersion.of("2.3.0-M2"),
+                ArtifactVersion.of("2.3.1"),
+                ArtifactVersion.of("2.4.0"),
+                ArtifactVersion.of("2.3.0-SNAPSHOT"),
+                ArtifactVersion.of("2.4.0-RC1"),
+                ArtifactVersion.of("2.3.1-SNAPSHOT"),
+                ArtifactVersion.of("2.4.0-M2"),
+                ArtifactVersion.of("2.3.0-RC1"),
+                ArtifactVersion.of("2.4.0-SNAPSHOT"),
+                ArtifactVersion.of("2.3.0"))
+            .stream()
+            .sorted()
+            .toList();
 
         System.out.format("sort %s\n", versions);
-        versions.sort(null);
-        ArrayList<ArtifactVersion> progression = new ArrayList<>();
-        progression.add(new ArtifactVersion(2, 3, 0, "M1"));
-        progression.add(new ArtifactVersion(2, 3, 0, "M2"));
-        progression.add(new ArtifactVersion(2, 3, 0, "RC1"));
-        progression.add(new ArtifactVersion(2, 3, 0, "RC2"));
-        progression.add(new ArtifactVersion(2, 3, 0, "SNAPSHOT"));
-        progression.add(new ArtifactVersion(2, 3, 0));
-        progression.add(new ArtifactVersion(2, 3, 1, "SNAPSHOT"));
-        progression.add(new ArtifactVersion(2, 3, 1));
-        progression.add(new ArtifactVersion(2, 4, 0, "M1"));
-        progression.add(new ArtifactVersion(2, 4, 0, "M2"));
-        progression.add(new ArtifactVersion(2, 4, 0, "RC1"));
-        progression.add(new ArtifactVersion(2, 4, 0, "SNAPSHOT"));
-        progression.add(new ArtifactVersion(2, 4, 0));
+        final List<ArtifactVersion> progression = List.of(
+            new ArtifactVersion(2, 3, 0, "M1"),
+            new ArtifactVersion(2, 3, 0, "M2"),
+            new ArtifactVersion(2, 3, 0, "RC1"),
+            new ArtifactVersion(2, 3, 0, "RC2"),
+            new ArtifactVersion(2, 3, 0, "SNAPSHOT"),
+            new ArtifactVersion(2, 3, 0),
+            new ArtifactVersion(2, 3, 1, "SNAPSHOT"),
+            new ArtifactVersion(2, 3, 1),
+            new ArtifactVersion(2, 4, 0, "M1"),
+            new ArtifactVersion(2, 4, 0, "M2"),
+            new ArtifactVersion(2, 4, 0, "RC1"),
+            new ArtifactVersion(2, 4, 0, "SNAPSHOT"),
+            new ArtifactVersion(2, 4, 0));
         assertEquals(versions, progression);
     }
 
