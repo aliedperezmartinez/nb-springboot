@@ -80,8 +80,8 @@ public class DeprecatedPropsHighlightingTask extends BaseHighlightingTask {
             final SpringBootService sbs = prj.getLookup().lookup(SpringBootService.class);
             if (sbs != null) {
                 for (PairElement pair : cfgResult.getCfgFile().getElements()) {
-                    final CfgElement key = pair.getKey();
-                    final CfgElement value = pair.getValue();
+                    final CfgElement key = pair.key();
+                    final CfgElement value = pair.value();
                     final String pName = key.getText();
                     ConfigurationMetadataProperty cfgMeta = sbs.getPropertyMetadata(pName);
                     if (cfgMeta != null && cfgMeta.getDeprecation() != null) {

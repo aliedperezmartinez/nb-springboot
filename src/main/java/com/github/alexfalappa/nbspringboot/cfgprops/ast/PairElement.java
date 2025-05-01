@@ -28,24 +28,9 @@ public record PairElement(CfgElement key, CfgElement value) implements Comparabl
         this(key, null);
     }
 
-    /**
-     * @deprecated Use record's {@link PairElement#key}
-     */
-    @Deprecated
-    public CfgElement getKey() {
-        return key();
-    }
-
-    /**
-     * @deprecated Use record's {@link PairElement#key}
-     */
-    @Deprecated
-    public CfgElement getValue() {
-        return value();
-    }
-
     @Override
     public int compareTo(PairElement o) {
         return key.compareTo(o.key);
     }
+
 }

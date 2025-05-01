@@ -72,8 +72,8 @@ public class DuplicatesHighlightingTask extends BaseHighlightingTask {
         logger.fine("Highlighting duplicate props");
         Map<String, Integer> firstOccur = new HashMap<>();
         for (PairElement pair : cfgResult.getCfgFile().getElements()) {
-            final CfgElement key = pair.getKey();
-            final CfgElement value = pair.getValue();
+            final CfgElement key = pair.key();
+            final CfgElement value = pair.value();
             final String pName = key.getText();
             final Integer line = NbDocument.findLineNumber((StyledDocument) document, key.getIdxStart()) + 1;
             if (firstOccur.containsKey(pName)) {

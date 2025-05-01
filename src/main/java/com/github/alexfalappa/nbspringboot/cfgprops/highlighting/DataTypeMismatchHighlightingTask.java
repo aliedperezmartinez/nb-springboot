@@ -87,8 +87,8 @@ public class DataTypeMismatchHighlightingTask extends BaseHighlightingTask {
             if (sbs != null && cp != null) {
                 final ClassLoader cl = cp.getClassLoader(true);
                 for (PairElement pair : cfgResult.getCfgFile().getElements()) {
-                    final CfgElement key = pair.getKey();
-                    final CfgElement value = pair.getValue();
+                    final CfgElement key = pair.key();
+                    final CfgElement value = pair.value();
                     final String pName = key.getText();
                     final String pValue = value != null ? value.getText() : "";
                     ConfigurationMetadataProperty cfgMeta = sbs.getPropertyMetadata(pName);
