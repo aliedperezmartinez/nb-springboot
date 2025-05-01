@@ -24,7 +24,7 @@ package com.github.alexfalappa.nbspringboot.cfgprops.ast;
  */
 public class KeyElement extends CfgElement {
 
-    String prefix;
+    private String prefix;
 
     public KeyElement(int idxStart, int idxEnd, String text) {
         super(idxStart, idxEnd, text);

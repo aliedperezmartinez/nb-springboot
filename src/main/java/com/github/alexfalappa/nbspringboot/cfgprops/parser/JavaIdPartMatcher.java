@@ -44,7 +44,7 @@ public class JavaIdPartMatcher extends CustomMatcher {
         return true;
     }
 
-    private boolean acceptChar(char c) {
+    private static boolean acceptChar(char c) {
         return Character.isJavaIdentifierPart(c);
     }
 }

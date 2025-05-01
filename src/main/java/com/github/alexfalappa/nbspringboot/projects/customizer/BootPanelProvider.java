@@ -50,7 +50,7 @@ public class BootPanelProvider implements ProjectCustomizer.CompositeCategoryPro
         return bootPanel;
     }
 
-    private SpringBootService prjBootService(Lookup context) {
+    private static SpringBootService prjBootService(Lookup context) {
         Project prj = context.lookup(Project.class);
         if (prj != null) {
             return prj.getLookup().lookup(SpringBootService.class);
@@ -58,7 +58,7 @@ public class BootPanelProvider implements ProjectCustomizer.CompositeCategoryPro
         return null;
     }
 
-    private boolean prjHasDepContaining(Lookup context, String txt) {
+    private static boolean prjHasDepContaining(Lookup context, String txt) {
         Project prj = context.lookup(Project.class);
         if (prj != null) {
             NbMavenProject nbMvn = prj.getLookup().lookup(NbMavenProject.class);

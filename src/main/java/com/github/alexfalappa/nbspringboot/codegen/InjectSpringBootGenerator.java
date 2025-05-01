@@ -122,7 +122,7 @@ public class InjectSpringBootGenerator extends BaseCodeGenerator {
         return model.getAccess().findPosition(parent.getPeer());
     }
 
-    private void createNbActions(FileObject dir) throws IOException {
+    private static void createNbActions(FileObject dir) throws IOException {
         if (dir == null) {
             return;
         }

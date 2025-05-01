@@ -15,7 +15,6 @@
  */
 package com.github.alexfalappa.nbspringboot.cfgprops.highlighting;
 
-import java.util.Arrays;
 import java.util.Collection;
 
 import org.netbeans.api.editor.mimelookup.MimeRegistration;
@@ -24,6 +23,7 @@ import org.netbeans.modules.parsing.spi.SchedulerTask;
 import org.netbeans.modules.parsing.spi.TaskFactory;
 
 import com.github.alexfalappa.nbspringboot.cfgprops.lexer.CfgPropsLanguage;
+import java.util.List;
 
 /**
  * Factory for NetBeans API highlighting tasks.
@@ -35,7 +35,7 @@ public class CfgPropsHighlightingTaskFactory extends TaskFactory {
 
     @Override
     public Collection<? extends SchedulerTask> create(Snapshot snpsht) {
-        return Arrays.asList(
+        return List.of(
                 new SyntaxErrorHighlightingTask(),
                 new DuplicatesHighlightingTask(),
                 new DataTypeMismatchHighlightingTask(),

@@ -75,7 +75,7 @@ public class SpringDependenciesGenerator extends BaseCodeGenerator {
         return -1;
     }
 
-    private int addDeps(POMModel model, String bootVersion, final Set<String> selectedDeps) throws Exception {
+    private static int addDeps(POMModel model, String bootVersion, final Set<String> selectedDeps) throws Exception {
         logger.log(Level.INFO, "Adding Spring Boot dependencies: {0}", selectedDeps.toString());
         JsonNode depsMeta = InitializrService.getInstance().getDependencies(bootVersion);
         Iterator<Map.Entry<String, JsonNode>> it = depsMeta.path("dependencies").fields();
@@ -129,7 +129,7 @@ public class SpringDependenciesGenerator extends BaseCodeGenerator {
         return newCaretPos;
     }
 
-    private void addBom(POMModel model, JsonNode depsMeta, String bomId) {
+    private static void addBom(POMModel model, JsonNode depsMeta, String bomId) {
         JsonNode bomInfo = depsMeta.path("boms").path(bomId);
         final String bomGroupId = bomInfo.path("groupId").asText();
         final String bomArtifactId = bomInfo.path("artifactId").asText();
@@ -169,7 +169,7 @@ public class SpringDependenciesGenerator extends BaseCodeGenerator {
         }
     }
 
-    private void addRepository(POMModel model, JsonNode depsMeta, String repoId) {
+    private static void addRepository(POMModel model, JsonNode depsMeta, String repoId) {
         // check repository with given id already exists
         List<Repository> repositories = model.getProject().getRepositories();
         if (repositories != null) {
@@ -185,7 +185,7 @@ public class SpringDependenciesGenerator extends BaseCodeGenerator {
         model.getProject().addRepository(repository);
     }
 
-    private void addPluginRepository(POMModel model, JsonNode depsMeta, String repoId) {
+    private static void addPluginRepository(POMModel model, JsonNode depsMeta, String repoId) {
         // check plugin repository with given id already exists
         List<Repository> plugRepositories = model.getProject().getPluginRepositories();
         if (plugRepositories != null) {
@@ -201,7 +201,7 @@ public class SpringDependenciesGenerator extends BaseCodeGenerator {
         model.getProject().addPluginRepository(repository);
     }
 
-    private void fillRepository(POMModel model, JsonNode depsMeta, String repoId, Repository repository) {
+    private static void fillRepository(POMModel model, JsonNode depsMeta, String repoId, Repository repository) {
         JsonNode repoInfo = depsMeta.path("repositories").path(repoId);
         repository.setId(repoId);
         repository.setName(repoInfo.path("name").asText());

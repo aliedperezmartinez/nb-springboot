@@ -34,7 +34,7 @@ import org.openide.util.Exceptions;
  */
 public abstract class BaseCodeGenerator implements CodeGenerator {
 
-    protected Logger logger = Logger.getLogger(getClass().getName());
+    protected static Logger logger = Logger.getLogger(BaseCodeGenerator.class.getName());
     private final JTextComponent component;
     private final POMModel model;
 
