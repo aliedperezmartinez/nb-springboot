@@ -17,7 +17,6 @@ package com.github.alexfalappa.nbspringboot.templates.repository;
 
 import java.io.IOException;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -75,10 +74,10 @@ public final class ReactRepoWizardIterator implements WizardDescriptor.Instantia
         FileObject foTemplate = Templates.getTemplate(wizard);
         DataObject doTemplate = DataObject.find(foTemplate);
         DataFolder df = DataFolder.findFolder(foDir);
-        Map<String, Object> props = new HashMap<>();
-        props.put(WIZ_BASE_INTERF, wizard.getProperty(WIZ_BASE_INTERF));
-        props.put(WIZ_ENTITY_CLASS, wizard.getProperty(WIZ_ENTITY_CLASS));
-        props.put(WIZ_ID_CLASS, wizard.getProperty(WIZ_ID_CLASS));
+        Map<String, Object> props = Map.of(
+            WIZ_BASE_INTERF, wizard.getProperty(WIZ_BASE_INTERF),
+            WIZ_ENTITY_CLASS, wizard.getProperty(WIZ_ENTITY_CLASS),
+            WIZ_ID_CLASS, wizard.getProperty(WIZ_ID_CLASS));
         DataObject doCreated = doTemplate.createFromTemplate(df, targetName, props);
         FileObject foCreated = doCreated.getPrimaryFile();
         return Collections.singleton(foCreated);

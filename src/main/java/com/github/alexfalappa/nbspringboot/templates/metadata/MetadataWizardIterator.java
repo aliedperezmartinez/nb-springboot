@@ -21,7 +21,6 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.nio.file.Path;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -101,11 +100,11 @@ public final class MetadataWizardIterator implements WizardDescriptor.Instantiat
             FileObject foTemplate = Templates.getTemplate(wizard);
             DataObject doTemplate = DataObject.find(foTemplate);
             DataFolder df = DataFolder.findFolder(foDir);
-            Map<String, Object> props = new HashMap<>();
-            props.put(WIZ_SECT_PROPS, wizard.getProperty(WIZ_SECT_PROPS));
-            props.put(WIZ_SECT_HINTS, wizard.getProperty(WIZ_SECT_HINTS));
-            props.put(WIZ_SECT_HINTS_VALUES, wizard.getProperty(WIZ_SECT_HINTS_VALUES));
-            props.put(WIZ_SECT_HINTS_PROVIDERS, wizard.getProperty(WIZ_SECT_HINTS_PROVIDERS));
+            Map<String, Object> props = Map.of(
+                WIZ_SECT_PROPS, wizard.getProperty(WIZ_SECT_PROPS),
+                WIZ_SECT_HINTS, wizard.getProperty(WIZ_SECT_HINTS),
+                WIZ_SECT_HINTS_VALUES, wizard.getProperty(WIZ_SECT_HINTS_VALUES),
+                WIZ_SECT_HINTS_PROVIDERS, wizard.getProperty(WIZ_SECT_HINTS_PROVIDERS));
             DataObject doCreated = doTemplate.createFromTemplate(df, targetName, props);
             FileObject foCreated = doCreated.getPrimaryFile();
             return Collections.singleton(foCreated);
