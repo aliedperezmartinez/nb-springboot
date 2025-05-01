@@ -86,7 +86,7 @@ public class DataTypeMismatchHighlightingTask extends BaseHighlightingTask {
             final ClassPath cp = Utils.execClasspathForProj(prj);
             if (sbs != null && cp != null) {
                 final ClassLoader cl = cp.getClassLoader(true);
-                for (PairElement pair : cfgResult.getCfgFile().getElements()) {
+                for (PairElement pair : cfgResult.getCfgFile().elements()) {
                     final CfgElement key = pair.key();
                     final CfgElement value = pair.value();
                     final String pName = key.getText();

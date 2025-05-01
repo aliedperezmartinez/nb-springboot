@@ -75,7 +75,7 @@ public class UnknownPropsHighlightingTask extends BaseHighlightingTask {
         if (prj != null) {
             final SpringBootService sbs = prj.getLookup().lookup(SpringBootService.class);
             if (sbs != null) {
-                for (PairElement pair : cfgResult.getCfgFile().getElements()) {
+                for (PairElement pair : cfgResult.getCfgFile().elements()) {
                     final CfgElement key = pair.key();
                     final CfgElement value = pair.value();
                     final String pName = key.getText();

@@ -25,12 +25,11 @@ import java.util.TreeSet;
  *
  * @author Alessandro Falappa
  */
-public class CfgFile {
+public record CfgFile(Set<PairElement> elements) {
 
-    private Set<PairElement> elements = new TreeSet<>();
-
-    public Set<PairElement> getElements() {
-        return elements;
+    public CfgFile() {
+        this(new TreeSet<>());
     }
+
 
 }

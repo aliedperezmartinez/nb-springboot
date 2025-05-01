@@ -86,7 +86,7 @@ public class CfgPropsParser extends Parser {
             }
             logger.finer("Parsed AST:");
             final CfgFile cfgFile = parboiled.getCfgFile();
-            for (PairElement p : cfgFile.getElements()) {
+            for (PairElement p : cfgFile.elements()) {
                 CfgElement e = p.key();
                 logger.finer(String.format("\t(%3d;%3d) key: %s", e.getIdxStart(), e.getIdxEnd(), e.getText()));
                 e = p.value();

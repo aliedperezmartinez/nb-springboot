@@ -107,14 +107,14 @@ public class CfgPropsParboiled extends BaseParser<CfgElement> {
                     case 1 -> {
                         CfgElement elemKey = stack.pop();
                         parsedProps.setProperty(unescape(elemKey.getText()), "");
-                        cfgFile.getElements().add(new PairElement(elemKey));
+                        cfgFile.elements().add(new PairElement(elemKey));
                     }
                     case 2 -> {
                         // NOTE: stack popping order below is important!
                         final CfgElement elemValue = stack.pop();
                         CfgElement elemKey = stack.pop();
                         parsedProps.setProperty(unescape(elemKey.getText()), unescape(elemValue.getText()));
-                        cfgFile.getElements().add(new PairElement(elemKey, elemValue));
+                        cfgFile.elements().add(new PairElement(elemKey, elemValue));
                     }
                     default -> throw new IllegalStateException(String.format("Cannot manage %d values on the parsing stack", size));
                 }
@@ -294,12 +294,12 @@ public class CfgPropsParboiled extends BaseParser<CfgElement> {
         return CharRange('0', '9');
     }
 
-    boolean debug(Var v) {
+    static boolean debug(Var v) {
         System.out.println(String.valueOf(v.get()));
         return true;
     }
 
-    String uniToStr(String str) {
+    static String uniToStr(String str) {
         try {
             int codePoint = Integer.parseInt(str, 16);
             return new String(Character.toChars(codePoint));
@@ -309,7 +309,7 @@ public class CfgPropsParboiled extends BaseParser<CfgElement> {
         return "";
     }
 
-    private String unescape(String text) {
+    private static String unescape(String text) {
         StringBuffer sb = new StringBuffer();
         Matcher m = PAT_UNICODES.matcher(text);
         while (m.find()) {
