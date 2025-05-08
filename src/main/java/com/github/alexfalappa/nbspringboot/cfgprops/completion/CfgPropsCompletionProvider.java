@@ -59,15 +59,12 @@ public class CfgPropsCompletionProvider implements CompletionProvider {
         if (sbs == null) {
             return null;
         }
-        switch (queryType) {
-            case CompletionProvider.COMPLETION_QUERY_TYPE:
-                return new AsyncCompletionTask(new CfgPropsCompletionQuery(sbs, prj), jtc);
-            case CompletionProvider.DOCUMENTATION_QUERY_TYPE:
-                return new AsyncCompletionTask(new CfgPropsDocAndTooltipQuery(sbs, false), jtc);
-            case CompletionProvider.TOOLTIP_QUERY_TYPE:
-                return new AsyncCompletionTask(new CfgPropsDocAndTooltipQuery(sbs, true), jtc);
-        }
-        return null;
+        return switch (queryType) {
+            case CompletionProvider.COMPLETION_QUERY_TYPE -> new AsyncCompletionTask(new CfgPropsCompletionQuery(sbs, prj), jtc);
+            case CompletionProvider.DOCUMENTATION_QUERY_TYPE -> new AsyncCompletionTask(new CfgPropsDocAndTooltipQuery(sbs, false), jtc);
+            case CompletionProvider.TOOLTIP_QUERY_TYPE -> new AsyncCompletionTask(new CfgPropsDocAndTooltipQuery(sbs, true), jtc);
+            default -> null;
+        };
     }
 
     @Override

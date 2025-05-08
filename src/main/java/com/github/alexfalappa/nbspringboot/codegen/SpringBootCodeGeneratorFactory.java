@@ -15,7 +15,6 @@
  */
 package com.github.alexfalappa.nbspringboot.codegen;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.text.JTextComponent;
@@ -37,30 +36,31 @@ public class SpringBootCodeGeneratorFactory implements CodeGenerator.Factory {
 
     @Override
     public List<? extends CodeGenerator> create(Lookup context) {
-        ArrayList<CodeGenerator> toRet = new ArrayList<>();
-        POMModel model = context.lookup(POMModel.class);
+        final POMModel model = context.lookup(POMModel.class);
         if (model != null) {
-            boolean hasBoot = hasBootStarter(model);
-            JTextComponent component = context.lookup(JTextComponent.class);
-            if (hasBoot) {
-                toRet.add(new SpringDependenciesGenerator(model, component));
-            } else {
-                toRet.add(new InjectSpringBootGenerator(model, component));
-            }
+            final JTextComponent component = context.lookup(JTextComponent.class);
+            return hasBootStarter(model)?
+                List.of(new SpringDependenciesGenerator(model, component)):
+                List.of(new InjectSpringBootGenerator(model, component));
         }
-        return toRet;
+        return List.of();
     }
 
     // check if there is at least a dependency whose artifactId contains 'spring-boot-starter'
     private static boolean hasBootStarter(POMModel model) {
-        if (model.getProject().getDependencies() != null) {
-            for (Dependency dep : model.getProject().getDependencies()) {
-                if (dep.getArtifactId().contains("spring-boot-starter")) {
-                    return true;
-                }
-            }
+        final List<Dependency> dependencies = model.getProject().getDependencies();
+        if (dependencies != null) {
+            return dependencies.stream()
+                .map(Dependency::getArtifactId)
+                .filter(SpringBootCodeGeneratorFactory::hasBootStarter)
+                .findFirst()
+                .isPresent();
         }
         return false;
+    }
+
+    private static boolean hasBootStarter(String id) {
+        return id.contains("spring-boot-starter");
     }
 
 }

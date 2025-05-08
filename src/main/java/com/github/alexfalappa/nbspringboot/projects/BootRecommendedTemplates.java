@@ -17,8 +17,9 @@ package com.github.alexfalappa.nbspringboot.projects;
 
 import java.util.EnumSet;
 import java.util.HashSet;
-import java.util.List;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.maven.artifact.Artifact;
 import org.netbeans.api.project.Project;
@@ -56,27 +57,8 @@ public class BootRecommendedTemplates implements RecommendedTemplates {
 
     @Override
     public String[] getRecommendedTypes() {
-        NbMavenProject project = prj.getLookup().lookup(NbMavenProject.class);
-        EnumSet<SpringDeps> deps = EnumSet.noneOf(SpringDeps.class);
-        List<Artifact> compileArtifacts = project.getMavenProject().getCompileArtifacts();
-        for (Object obj : compileArtifacts) {
-            if (obj instanceof Artifact artifact) {
-                if (artifact.getScope().equals(Artifact.SCOPE_COMPILE)) {
-                    final String artifactId = artifact.getArtifactId();
-                    if (artifactId.contains("spring-data")) {
-                        deps.add(SpringDeps.DATA);
-                    }
-                    switch (artifactId) {
-                        case "spring-context" -> deps.add(SpringDeps.CONTEXT);
-                        case "spring-web" -> deps.add(SpringDeps.WEB);
-                        case "spring-webflux" -> deps.add(SpringDeps.WEBFLUX);
-                        case "spring-boot" -> deps.add(SpringDeps.BOOT);
-                        case "spring-boot-actuator" -> deps.add(SpringDeps.ACTUATOR);
-                    }
-                }
-            }
-        }
-        Set<String> recomTypes = new HashSet<>();
+        final Set<SpringDeps> deps = getDependencies();
+        final Set<String> recomTypes = new HashSet<>();
         if (deps.contains(SpringDeps.BOOT)) {
             recomTypes.add(CATEGORY_SPRING_BOOT);
         }
@@ -96,6 +78,30 @@ public class BootRecommendedTemplates implements RecommendedTemplates {
             recomTypes.add(CATEGORY_SPRING_BOOT_ACTUATOR);
         }
         return recomTypes.toArray(String[]::new);
+    }
+
+    private Set<SpringDeps> getDependencies() {
+        return prj.getLookup().lookup(NbMavenProject.class)
+            .getMavenProject().getCompileArtifacts().stream()
+            .filter(artifact -> artifact.getScope().equals(Artifact.SCOPE_COMPILE))
+            .map(Artifact::getArtifactId)
+            .map(BootRecommendedTemplates::getSpringDeps)
+            .filter(Objects::nonNull)
+            .collect(Collectors.toCollection(() -> EnumSet.noneOf(SpringDeps.class)));
+    }
+
+    private static SpringDeps getSpringDeps(String artifactId) {
+        if (artifactId.contains("spring-data")) {
+            return SpringDeps.DATA;
+        }
+        return switch (artifactId) {
+            case "spring-context" -> SpringDeps.CONTEXT;
+            case "spring-web" -> SpringDeps.WEB;
+            case "spring-webflux" -> SpringDeps.WEBFLUX;
+            case "spring-boot" -> SpringDeps.BOOT;
+            case "spring-boot-actuator" -> SpringDeps.ACTUATOR;
+            default -> null;
+        };
     }
 
 }

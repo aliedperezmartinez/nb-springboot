@@ -128,15 +128,12 @@ public class JavaTypeCompletionItem implements CompletionItem {
             Completion.get().hideCompletion();
             JTextComponent tc = (JTextComponent) evt.getSource();
             BaseDocument doc = (BaseDocument) tc.getDocument();
-            doc.runAtomic(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        doc.remove(dotOffset, caretOffset - dotOffset);
-                        doc.insertString(dotOffset, name.concat("."), null);
-                    } catch (BadLocationException ble) {
-                        //ignore
-                    }
+            doc.runAtomic(() -> {
+                try {
+                    doc.remove(dotOffset, caretOffset - dotOffset);
+                    doc.insertString(dotOffset, name.concat("."), null);
+                } catch (BadLocationException ble) {
+                    //ignore
                 }
             });
             Completion.get().showCompletion();

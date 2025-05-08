@@ -33,7 +33,7 @@ import com.github.alexfalappa.nbspringboot.projects.service.api.HintProvider;
  */
 public class HandleAsHintProvider implements HintProvider {
 
-    private ClassPath cpExec = null;
+    private final ClassPath cpExec;
     private final FileObject resourcesFolder;
 
     public HandleAsHintProvider(FileObject resourcesFolder, ClassPath cpExec) {

@@ -11,11 +11,11 @@
     <description>NetBeans IDE plugin for developing with Spring Boot and the Spring framework</description>
 
     <properties>
-        <junit.version>5.12.0</junit.version>
+        <junit.version>5.12.2</junit.version>
         <netbeans.api.version>RELEASE250</netbeans.api.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <spring.boot.version>3.4.3</spring.boot.version>
-        <spring.framework.version>6.2.3</spring.framework.version>
+        <spring.boot.version>3.4.5</spring.boot.version>
+        <spring.framework.version>6.2.6</spring.framework.version>
     </properties>
 
     <dependencies>
@@ -53,12 +53,12 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-collections4</artifactId>
-            <version>4.4</version>
+            <version>4.5.0</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.18.3</version>
+            <version>2.19.0</version>
         </dependency>
         <dependency>
             <groupId>org.parboiled</groupId>
@@ -302,9 +302,33 @@
         </dependency>
         <dependency>
             <groupId>org.hamcrest</groupId>
-            <artifactId>hamcrest-core</artifactId>
+            <artifactId>hamcrest</artifactId>
             <version>3.0</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>5.17.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>2.20.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-netbeans-modules-nbjunit</artifactId>
+            <version>${netbeans.api.version}</version>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.netbeans.api</groupId>
+                    <artifactId>org-netbeans-libs-junit4</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
 
@@ -394,7 +418,7 @@
             <plugin>
                 <groupId>org.apache.netbeans.utilities</groupId>
                 <artifactId>nbm-maven-plugin</artifactId>
-                <version>14.2</version>
+                <version>14.3</version>
                 <extensions>true</extensions>
                 <configuration>
                     <licenseFile>LICENSE</licenseFile>
@@ -451,7 +475,7 @@
             </plugin>-->
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.5.2</version>
+                <version>3.5.3</version>
                 <configuration>
                     <!--comment following exclusions when working on lexer and willing to execute lexer tests-->
                     <excludes>

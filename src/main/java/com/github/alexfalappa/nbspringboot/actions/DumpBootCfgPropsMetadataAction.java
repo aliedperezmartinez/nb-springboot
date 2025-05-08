@@ -72,12 +72,8 @@ public final class DumpBootCfgPropsMetadataAction implements ActionListener {
         SpringBootService sbs = prj.getLookup().lookup(SpringBootService.class);
         if (sbs != null) {
             try {
-                // prepare file chooser
-                JFileChooser jfc = new JFileChooser();
-                jfc.setFileSelectionMode(JFileChooser.FILES_ONLY);
-                jfc.setAcceptAllFileFilterUsed(false);
-                jfc.setFileFilter(new FileNameExtensionFilter("CSV files", "csv"));
-                // as for file to save
+                JFileChooser jfc = prepareFileChooser();
+                // ask for file to save
                 if (JFileChooser.APPROVE_OPTION == jfc.showSaveDialog(WindowManager.getDefault().getMainWindow())) {
                     Path path = jfc.getSelectedFile().toPath();
                     if (path != null) {
@@ -107,7 +103,7 @@ public final class DumpBootCfgPropsMetadataAction implements ActionListener {
         }
     }
 
-    private void dumpToCsv(SpringBootService sbs, Path path) {
+    private static void dumpToCsv(SpringBootService sbs, Path path) {
         try (BufferedWriter bw = Files.newBufferedWriter(path);
                 PrintWriter pw = new PrintWriter(bw)) {
             pw.println("Name,DataType,"
@@ -163,4 +159,13 @@ public final class DumpBootCfgPropsMetadataAction implements ActionListener {
             Exceptions.printStackTrace(ex);
         }
     }
+
+    private static JFileChooser prepareFileChooser() {
+        JFileChooser jfc = new JFileChooser();
+        jfc.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        jfc.setAcceptAllFileFilterUsed(false);
+        jfc.setFileFilter(new FileNameExtensionFilter("CSV files", "csv"));
+        return jfc;
+    }
+
 }

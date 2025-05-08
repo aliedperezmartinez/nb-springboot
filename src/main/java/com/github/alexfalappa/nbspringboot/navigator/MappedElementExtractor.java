@@ -15,7 +15,6 @@
  */
 package com.github.alexfalappa.nbspringboot.navigator;
 
-import java.lang.annotation.IncompleteAnnotationException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -43,6 +42,9 @@ import com.sun.source.tree.CompilationUnitTree;
 import com.sun.source.util.TreePath;
 import com.sun.source.util.TreeScanner;
 import com.sun.source.util.Trees;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * This scanner does the heavy lifting of extracting methods that have been mapped to URLs.
@@ -75,14 +77,10 @@ public final class MappedElementExtractor extends TreeScanner<List<MappedElement
 
     @Override
     public List<MappedElement> reduce(final List<MappedElement> r1, final List<MappedElement> r2) {
-        final List<MappedElement> rv = new ArrayList<>();
-        if (r1 != null) {
-            rv.addAll(r1);
-        }
-        if (r2 != null) {
-            rv.addAll(r2);
-        }
-        return rv;
+        return Stream.of(r1, r2)
+            .filter(Objects::nonNull)
+            .flatMap(List::stream)
+            .toList();
     }
 
     @Override
@@ -166,12 +164,10 @@ public final class MappedElementExtractor extends TreeScanner<List<MappedElement
      * @param data
      * @return A list with the elements of the arrays in <code>data</code> concatenated
      */
-    <T> List<T> concatValues(final T[]... data) {
-        final List<T> rv = new ArrayList<>();
-        for (T[] values : data) {
-            rv.addAll(Arrays.asList(values));
-        }
-        return rv;
+    static <T> List<T> concatValues(final T[]... data) {
+        return Arrays.stream(data)
+            .flatMap(Arrays::stream)
+            .collect(Collectors.toList());
     }
 
     /**
@@ -182,23 +178,12 @@ public final class MappedElementExtractor extends TreeScanner<List<MappedElement
      * @return
      */
     Map<String, List<RequestMethod>> extractTypeLevelMappings(final RequestMapping parentRequestMapping) {
-        final Map<String, List<RequestMethod>> parentUrls = new TreeMap<>();
-        List<String> urls = new ArrayList<>();
-        List<RequestMethod> methods = new ArrayList<>();
-        if (parentRequestMapping != null) {
-            try {
-                urls = concatValues(parentRequestMapping.value(), parentRequestMapping.path());
-                methods = Arrays.asList(parentRequestMapping.method());
-            } catch (IncompleteAnnotationException ex) {
-                // ignore as may be thrown while typing annotations
-            }
-        }
-        final List<String> usedUrls = urls.isEmpty() ? Arrays.asList("/") : urls;
-        for (final String url : usedUrls) {
-            final String usedUrl = url.startsWith("/") ? url : "/" + url;
-            parentUrls.put(usedUrl, methods);
-        }
-        return parentUrls;
+        final List<String> urls = parentRequestMapping != null? concatValues(parentRequestMapping.value(), parentRequestMapping.path()): List.of();
+        final List<RequestMethod> methods = parentRequestMapping != null? List.of(parentRequestMapping.method()): List.of();
+        final List<String> usedUrls = urls.isEmpty() ? List.of("/") : urls;
+        return usedUrls.stream()
+            .map(url -> url.startsWith("/") ? url : "/" + url)
+            .collect(Collectors.toMap(k -> k, v -> methods));
     }
 
     /**
@@ -210,7 +195,7 @@ public final class MappedElementExtractor extends TreeScanner<List<MappedElement
      */
     void extractMethodLevelMappings(final Map<String, List<RequestMethod>> target, final List<String> urls,
             final RequestMethod[] methods) {
-        final List<String> usedUrls = urls.isEmpty() ? Arrays.asList("/") : urls;
+        final List<String> usedUrls = urls.isEmpty() ? List.of("/") : urls;
         for (String url : usedUrls) {
             final String usedUrl = url.startsWith("/") ? url : "/" + url;
             final List<RequestMethod> mappedMethods;
@@ -220,7 +205,7 @@ public final class MappedElementExtractor extends TreeScanner<List<MappedElement
                 mappedMethods = new ArrayList<>();
                 target.put(usedUrl, mappedMethods);
             }
-            mappedMethods.addAll(Arrays.asList(methods));
+            mappedMethods.addAll(List.of(methods));
         }
     }
 }
