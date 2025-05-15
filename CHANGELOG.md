@@ -1,5 +1,9 @@
 # Changelog
 
+
+-  **4.0** (2025) 
+    -  Full update for NetBeans 25 (contribution by Alied Perez Martinez )
+
 -  **Unreleased**
     -  Frequently used dependencies counts are also updated using the _Add Spring Boot Dependencies_ dialog
     -  Fix NPE when trying to access Spring Boot section of project properties dialog on the parent in a multimodule project (contribution by Diego Díez Ricondo)
