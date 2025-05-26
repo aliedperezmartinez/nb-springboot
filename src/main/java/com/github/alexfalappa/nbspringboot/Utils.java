@@ -53,7 +53,6 @@ import org.netbeans.api.project.FileOwnerQuery;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.ProjectUtils;
 import org.netbeans.api.project.SourceGroup;
-import org.netbeans.api.project.Sources;
 import org.netbeans.modules.maven.NbMavenProjectImpl;
 import org.netbeans.modules.maven.api.NbMavenProject;
 import org.netbeans.spi.editor.completion.CompletionResultSet;
@@ -83,6 +82,8 @@ import static java.util.regex.Pattern.compile;
  */
 public final class Utils {
 
+    protected static final String SPRING_BOOT_STARTER_ARTIFACT_ID = "spring-boot-starter";
+    protected static final String SPRING_BOOT_STARTER_GROUP_ID = "org.springframework.boot";
     private static final Logger logger = Logger.getLogger(Utils.class.getName());
     private static final Pattern PATTERN_JAVATYPE = compile("(\\w+\\.)+(\\w+)");
     private static final String PREFIX_CLASSPATH = "classpath:/";
@@ -186,26 +187,24 @@ public final class Utils {
      * @return the active project or null if no active project found
      */
     public static Project getActiveProject() {
+        final Lookup actionsGlobalContext = Utilities.actionsGlobalContext();
         // lookup in global context
-        Project prj = Utilities.actionsGlobalContext().lookup(Project.class);
+        Project prj = actionsGlobalContext.lookup(Project.class);
         if (prj != null) {
-            logger.log(Level.FINE, "Found project reference in actions global context");
             return prj;
         }
-        FileObject foobj = Utilities.actionsGlobalContext().lookup(FileObject.class);
+        FileObject foobj = actionsGlobalContext.lookup(FileObject.class);
         if (foobj != null) {
             prj = FileOwnerQuery.getOwner(foobj);
             if (prj != null) {
-                logger.log(Level.FINE, "Found project reference via file object in actions global context");
                 return prj;
             }
         }
-        DataObject dobj = Utilities.actionsGlobalContext().lookup(DataObject.class);
+        DataObject dobj = actionsGlobalContext.lookup(DataObject.class);
         if (dobj != null) {
             FileObject fo = dobj.getPrimaryFile();
             prj = FileOwnerQuery.getOwner(fo);
             if (prj != null) {
-                logger.log(Level.FINE, "Found project reference via data object in actions global context");
                 return prj;
             }
         }
@@ -213,17 +212,15 @@ public final class Utils {
         final TopComponent activeEditor = TopComponent.getRegistry().getActivated();
         if (activeEditor != null) {
             final Lookup tcLookup = activeEditor.getLookup();
-            prj = tcLookup.lookup(Project.class);
-            if (prj != null) {
-                logger.log(Level.FINE, "Found project reference in lookup of active editor");
-                return prj;
+            Project prj3 = tcLookup.lookup(Project.class);
+            if (prj3 != null) {
+                return prj3;
             }
             foobj = tcLookup.lookup(FileObject.class);
             if (foobj != null) {
-                prj = FileOwnerQuery.getOwner(foobj);
-                if (prj != null) {
-                    logger.log(Level.FINE, "Found project reference in lookup of active editor via file object");
-                    return prj;
+                prj3 = FileOwnerQuery.getOwner(foobj);
+                if (prj3 != null) {
+                    return prj3;
                 }
             }
             dobj = tcLookup.lookup(DataObject.class);
@@ -231,7 +228,6 @@ public final class Utils {
                 FileObject fo = dobj.getPrimaryFile();
                 prj = FileOwnerQuery.getOwner(fo);
                 if (prj != null) {
-                    logger.log(Level.FINE, "Found project reference in lookup of active editor via data object");
                     return prj;
                 }
             }
@@ -247,8 +243,7 @@ public final class Utils {
      * @return found ClassPath object or null
      */
     public static ClassPath execClasspathForProj(Project proj) {
-        Sources srcs = ProjectUtils.getSources(proj);
-        SourceGroup[] srcGroups = srcs.getSourceGroups(JavaProjectConstants.SOURCES_TYPE_JAVA);
+        final SourceGroup[] srcGroups = getSourceGroups(proj, JavaProjectConstants.SOURCES_TYPE_JAVA);
         if (srcGroups.length > 0) {
             return ClassPath.getClassPath(srcGroups[0].getRootFolder(), ClassPath.EXECUTE);
         } else {
@@ -258,8 +253,7 @@ public final class Utils {
     }
 
     public static FileObject resourcesFolderForProj(Project proj) {
-        Sources srcs = ProjectUtils.getSources(proj);
-        SourceGroup[] srcGroups = srcs.getSourceGroups(JavaProjectConstants.SOURCES_TYPE_RESOURCES);
+        final SourceGroup[] srcGroups = getSourceGroups(proj, JavaProjectConstants.SOURCES_TYPE_RESOURCES);
         if (srcGroups.length > 0) {
             // the first sourcegroup is src/main/resources (the second is src/test/resources)
             return srcGroups[0].getRootFolder();
@@ -269,32 +263,23 @@ public final class Utils {
 
     public static void completeBoolean(String filter, Consumer<ValueHint> consumer) {
         if ("true".contains(filter)) {
-            consumer.accept(Utils.createHint("true"));
+            consumer.accept(createHint("true"));
         }
         if ("false".contains(filter)) {
-            consumer.accept(Utils.createHint("false"));
+            consumer.accept(createHint("false"));
         }
     }
 
     public static void completeCharset(String filter, Consumer<ValueHint> consumer) {
-        HintSupport.getAllCharsets().stream()
-            .filter(chrsName -> chrsName.toLowerCase().contains(filter.toLowerCase()))
-            .map(Utils::createHint)
-            .forEachOrdered(consumer);
+        complete(HintSupport.getAllCharsets().stream(), filter, consumer);
     }
 
     public static void completeLocale(String filter, Consumer<ValueHint> consumer) {
-        HintSupport.getAllLocales().stream()
-            .filter(lclName -> lclName.toLowerCase().contains(filter.toLowerCase()))
-            .map(Utils::createHint)
-            .forEachOrdered(consumer);
+        complete(HintSupport.getAllLocales().stream(), filter, consumer);
     }
 
     public static void completeMimetype(String filter, Consumer<ValueHint> consumer) {
-        HintSupport.MIMETYPES.stream()
-                .filter(mime -> mime.toLowerCase().contains(filter.toLowerCase()))
-                .map(Utils::createHint)
-                .forEachOrdered(consumer);
+        complete(HintSupport.MIMETYPES.stream(), filter, consumer);
     }
 
     public static void completeEnum(ClassPath cp, String dataType, String filter, Consumer<ValueHint> consumer) {
@@ -376,7 +361,7 @@ public final class Utils {
         } else {
             for (String rp : resourcePrefixes) {
                 if (rp.contains(filter)) {
-                    completionResultSet.addItem(new ValueCompletionItem(Utils.createHint(rp), dotOffset, caretOffset,
+                    completionResultSet.addItem(new ValueCompletionItem(createHint(rp), dotOffset, caretOffset,
                             rp.equals(PREFIX_CLASSPATH) || rp.equals(PREFIX_FILE)));
                 }
             }
@@ -406,9 +391,7 @@ public final class Utils {
      * @return a ValueHint object
      */
     public static ValueHint createEnumHint(String value) {
-        ValueHint vh = new ValueHint();
-        vh.setValue(value.replaceAll("_", "-"));
-        return vh;
+        return createHint(value.replaceAll("_", "-"));
     }
 
     /**
@@ -419,8 +402,7 @@ public final class Utils {
      * @return a ValueHint object
      */
     public static ValueHint createHint(String value, String description) {
-        ValueHint vh = new ValueHint();
-        vh.setValue(value);
+        final ValueHint vh = createHint(value);
         vh.setDescription(description);
         return vh;
     }
@@ -464,21 +446,6 @@ public final class Utils {
         return new ImageIcon(image);
     }
 
-    private static JComponent getSubstitute(Class<?> clazz) throws IllegalAccessException {
-        JComponent standInComponent;
-        try {
-            standInComponent = (JComponent)  clazz.getDeclaredConstructor().newInstance();
-        } catch (InstantiationException |
-            NoSuchMethodException |
-            SecurityException |
-            InvocationTargetException e) {
-            standInComponent = new AbstractButton() {
-            };
-            ((AbstractButton) standInComponent).setModel(new DefaultButtonModel());
-        }
-        return standInComponent;
-    }
-
     /**
      * Check if any of the project dependencies artifact ids contains the given string.
      *
@@ -487,14 +454,9 @@ public final class Utils {
      * @return true if the project has a dependency artifactId containing the search string
      */
     public static boolean dependencyArtifactIdContains(NbMavenProject nbMvn, String search) {
-        MavenProject mPrj = nbMvn.getMavenProject();
-        for (Object o : mPrj.getDependencies()) {
-            Dependency d = (Dependency) o;
-            if (d.getArtifactId().contains(search)) {
-                return true;
-            }
-        }
-        return false;
+        return nbMvn.getMavenProject().getDependencies().stream()
+            .map(Dependency::getArtifactId)
+            .anyMatch(id -> id.contains(search));
     }
 
     /**
@@ -505,20 +467,17 @@ public final class Utils {
      */
     public static Optional<String> getSpringBootVersion(Project project) {
         return Stream.of(project)
-                .filter(Objects::nonNull)
-                .filter(NbMavenProjectImpl.class::isInstance)
-                .map(NbMavenProjectImpl.class::cast)
-                // All dependencies that this project has, including transitive ones.
-                .flatMap(p -> p.getOriginalMavenProject().getArtifacts().stream())
-                .filter(Utils::isSpringBootStarterArtifact)
-                .map(Artifact::getVersion)
-                .peek(springBootVersion -> logger.log(FINE, "Spring Boot version {0} detected", springBootVersion))
-                .findFirst();
-    }
-
-    private static boolean isSpringBootStarterArtifact(Artifact artifact) {
-        return "org.springframework.boot".equals(artifact.getGroupId())
-                && "spring-boot-starter".equals(artifact.getArtifactId());
+            .filter(Objects::nonNull)
+            .filter(NbMavenProjectImpl.class::isInstance)
+            .map(NbMavenProjectImpl.class::cast)
+            // All dependencies that this project has, including transitive ones.
+            .map(NbMavenProjectImpl::getOriginalMavenProject)
+            .map(MavenProject::getArtifacts)
+            .flatMap(Set::stream)
+            .filter(Utils::isSpringBootStarterArtifact)
+            .map(Artifact::getVersion)
+            .peek(version -> logger.log(FINE, "Spring Boot version {0} detected", version))
+            .findFirst();
     }
 
     /**
@@ -530,4 +489,41 @@ public final class Utils {
     public static boolean isSpringBootProject(Project project) {
         return getSpringBootVersion(project).isPresent();
     }
+
+    private static SourceGroup[] getSourceGroups(Project proj, String type) {
+        return ProjectUtils.getSources(proj)
+            .getSourceGroups(type);
+    }
+
+    private static void complete(final Stream<String> charsets, String filter, Consumer<ValueHint> consumer) {
+        charsets
+            .filter(name -> name.toLowerCase().contains(filter.toLowerCase()))
+            .map(Utils::createHint)
+            .forEachOrdered(consumer);
+    }
+
+    private static boolean isSpringBootStarterArtifact(Artifact artifact) {
+        return SPRING_BOOT_STARTER_GROUP_ID.equals(artifact.getGroupId())
+                && SPRING_BOOT_STARTER_ARTIFACT_ID.equals(artifact.getArtifactId());
+    }
+
+    private static JComponent getSubstitute(Class<?> clazz) throws IllegalAccessException {
+        try {
+            return (JComponent) clazz.getDeclaredConstructor().newInstance();
+        } catch (InstantiationException |
+            NoSuchMethodException |
+            SecurityException |
+            InvocationTargetException e) {
+            return buildDefaultComponent();
+        }
+    }
+
+    private static JComponent buildDefaultComponent() {
+        final AbstractButton result = new DefaultButton();
+        result.setModel(new DefaultButtonModel());
+        return result;
+    }
+
+    private static class DefaultButton extends AbstractButton {}
+
 }
