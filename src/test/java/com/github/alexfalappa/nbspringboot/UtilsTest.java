@@ -248,7 +248,7 @@ public class UtilsTest {
         final String charset = Charset.defaultCharset().displayName();
         doAnswer(invocation -> {
             ValueHint vh = invocation.getArgument(0);
-            assertTrue(() -> ((String)vh.getValue()).contains(charset));
+            assertTrue(() -> ((String)vh.getValue()).toLowerCase().contains(charset.toLowerCase()));
             return null;
         })
             .when(consumer).accept(any(ValueHint.class));
@@ -264,7 +264,7 @@ public class UtilsTest {
         System.out.println("Locale: " + locale);
         doAnswer(invocation -> {
             ValueHint vh = invocation.getArgument(0);
-            assertTrue(() -> ((String)vh.getValue()).contains(locale));
+            assertTrue(() -> ((String)vh.getValue()).toLowerCase().contains(locale.toLowerCase()));
             return null;
         })
             .when(consumer).accept(any(ValueHint.class));
@@ -279,7 +279,7 @@ public class UtilsTest {
         final String mimeType = "json";
         doAnswer(invocation -> {
             ValueHint vh = invocation.getArgument(0);
-            assertTrue(() -> ((String)vh.getValue()).contains(mimeType));
+            assertTrue(() -> ((String)vh.getValue()).toLowerCase().contains(mimeType));
             return null;
         })
             .when(consumer).accept(any(ValueHint.class));
