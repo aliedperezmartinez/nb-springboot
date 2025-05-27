@@ -56,10 +56,9 @@ class CfgPropsScanner {
      * Translates characters to character classes
      */
     private static final String ZZ_CMAP_PACKED
-            = """
-              \t\u0000\u0001\u0004\u0001\u0002\u0001\u0001\u0001\u0005\u0001\u0003\u0012\u0000\u0001\t\u0001\u0007\u0001\u0000\u0001\u0007
-              \u0000\u0001
-              \u0001\u0000\u0001\r\t\u000e\u0001\b\u0002\u0000\u0001\b\u001d\u0000\u0001\u000b\u0001\u0006\u0001\f'\u0000\u0001\u0001\u1fa2\u0000\u0001\u0001\u0001\u0001\uffff\u0000\uffff\u0000\uffff\u0000\uffff\u0000\uffff\u0000\uffff\u0000\uffff\u0000\uffff\u0000\uffff\u0000\uffff\u0000\uffff\u0000\uffff\u0000\uffff\u0000\uffff\u0000\uffff\u0000\uffff\u0000\udfe6\u0000""";
+            = "\11\0\1\4\1\2\1\1\1\5\1\3\22\0\1\11\1\7\1\0"
+            + "\1\7\12\0\1\12\1\0\1\15\11\16\1\10\2\0\1\10\35\0"
+            + "\1\13\1\6\1\14\47\0\1\1\u1fa2\0\1\1\1\1\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\udfe6\0";
 
     /**
      * Translates characters to character classes
@@ -72,9 +71,10 @@ class CfgPropsScanner {
     private static final int[] ZZ_ACTION = zzUnpackAction();
 
     private static final String ZZ_ACTION_PACKED_0
-            = """
-              \u0006\u0000\u0001\u0001\u0001\u0002\u0001\u0003\u0001\u0004\u0001\u0003\u0002\u0005\u0001\u0006\u0001\u0005\u0001\u0003\u0002\u0006\u0001\u0007\u0001\u0002\u0001\b\u0001\t\u0001
-              \u0001\u000b\u0001\u0003\u0002\f\u0001\u0002\u0001\u0000\u0001\u0001\u0001\u0000\u0001\u0005\u0001\r\u0001\u0000\u0001\u000b\u0001\u000e""";
+            = "\6\0\1\1\1\2\1\3\1\4\1\3\2\5\1\6"
+            + "\1\5\1\3\2\6\1\7\1\2\1\10\1\11\1\12"
+            + "\1\13\1\3\2\14\1\2\1\0\1\1\1\0\1\5"
+            + "\1\15\1\0\1\13\1\16";
 
     private static int[] zzUnpackAction() {
         int[] result = new int[36];
@@ -137,13 +137,27 @@ class CfgPropsScanner {
     private static final int[] ZZ_TRANS = zzUnpackTrans();
 
     private static final String ZZ_TRANS_PACKED_0
-            = """
-              \u0002\u0007\u0004\b\u0001\t\u0001
-              \u0001\u000b\u0001\b\u0003\u000b\u0002\u0007\u0001\f\u0001\r\u0002\u000e\u0001\u000f\u0001\u000e\u0001\u0010\u0002\f\u0001\u000f\u0005\f\u0002\u0007\u0001\u0011\u0001\u0012\u0001\b\u0001\u0011\u0001\t\u0001
-              \u0001\u0013\u0001\u0014\u0001\u0015\u0001\u0016\u0001\u0017\u0002\u0007\u0002\u0018\u0001\u0011\u0001\u0012\u0001\b\u0001\u0011\u0001\u0019\u0001\u000b\u0001\u0013\u0001\u0014\u0002\u000b\u0001\u0017\u0001\u001a\u0001\u001b\u0001\f\u0001\r\u0002\u000e\u0001\b\u0001\u000e\u0001\u0010\u0001\f\u0001\u0013\u0001\u0014\u0006\f\u0001\r\u0002\u000e\u0001\b\u0001\u000e\u0001\u0010\u0002\f\u0001\u001c\u0005\f\u0002\u0007\u0004\u0000\u0001\u001d\u0006\u0000\u0002\u0007\u0002\u0000\u0004\b\u0003\u0000\u0001\b\u0005\u0000\u0003\u0007\u0001\u001e\u000b\u0007\u0002
-              \u0002\u0000\u000b
-              \u000f\u0000\u0002\f\u0002\u0000\u0001\f\u0001\u0000\u0001\u001f
-              \f\u0002\u000e\u0001\r\u0001\u000e\u0001\u001f\u0002\f\u0001\r\u0005\f\u0002\u0000\u0004\u000e\u0003\u0000\u0001\u000e\u0005\u0000\u0002\f\u0002\b\u0001\u000f\u0001\b\u0001\u001f\u0002\f\u0001\u000f\b\f\u0001 \u000b\f\u0002\u0000\u0001\u0011\u0003\b\u0003\u0000\u0001\b\u0007\u0000\u0002\b\u0001!\u0001\b\u0003\u0000\u0001\b\u0005\u0000\u0002\u0018\u0004\u0000\u0001"\u0006\u0000\u0005\u0018\u0001#\r\u0018\u0004\u0000\u0001"\u0006\u0000\u0002\u001b\u0002\u0000\u0002\b\u0001$\u0001\b\u0003\u0000\u0001\b\u0005\u0000\u0003\u0007\u0003\u0000\u0001\u001d\u0006\u0000\u0002\u0007\u0003\f\u0001\u0000\u0001\f\u0001\u0000\u0001\u001f\b\f\u0002\u0000\u0004\b\u0003\u0000\u0001\u0014\u0005\u0000\u0003\u0018\u0003\u0000\u0001"\u0006\u0000\u0002\u0018\u0002\u0000\u0004\b\u0003\u0000\u0001\u001c\u0005\u0000""";
+            = "\2\7\4\10\1\11\1\12\1\13\1\10\3\13\2\7"
+            + "\1\14\1\15\2\16\1\17\1\16\1\20\2\14\1\17"
+            + "\5\14\2\7\1\21\1\22\1\10\1\21\1\11\1\12"
+            + "\1\23\1\24\1\25\1\26\1\27\2\7\2\30\1\21"
+            + "\1\22\1\10\1\21\1\31\1\13\1\23\1\24\2\13"
+            + "\1\27\1\32\1\33\1\14\1\15\2\16\1\10\1\16"
+            + "\1\20\1\14\1\23\1\24\6\14\1\15\2\16\1\10"
+            + "\1\16\1\20\2\14\1\34\5\14\2\7\4\0\1\35"
+            + "\6\0\2\7\2\0\4\10\3\0\1\10\5\0\3\7"
+            + "\1\36\13\7\2\12\2\0\13\12\17\0\2\14\2\0"
+            + "\1\14\1\0\1\37\12\14\2\16\1\15\1\16\1\37"
+            + "\2\14\1\15\5\14\2\0\4\16\3\0\1\16\5\0"
+            + "\2\14\2\10\1\17\1\10\1\37\2\14\1\17\10\14"
+            + "\1\40\13\14\2\0\1\21\3\10\3\0\1\10\7\0"
+            + "\2\10\1\41\1\10\3\0\1\10\5\0\2\30\4\0"
+            + "\1\42\6\0\5\30\1\43\15\30\4\0\1\42\6\0"
+            + "\2\33\2\0\2\10\1\44\1\10\3\0\1\10\5\0"
+            + "\3\7\3\0\1\35\6\0\2\7\3\14\1\0\1\14"
+            + "\1\0\1\37\10\14\2\0\4\10\3\0\1\24\5\0"
+            + "\3\30\3\0\1\42\6\0\2\30\2\0\4\10\3\0"
+            + "\1\34\5\0";
 
     private static int[] zzUnpackTrans() {
         int[] result = new int[405];
@@ -612,90 +626,62 @@ class CfgPropsScanner {
                 }
             } else {
                 switch (zzAction < 0 ? zzAction : ZZ_ACTION[zzAction]) {
-                    case 1: {
+                    case 1 -> {
                         yybegin(IN_KEY);
                         return CfgPropsTokenId.KEY;
                     }
-                    case 15:
-                        break;
-                    case 2: {
+                    case 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28 -> {}
+                    case 2 -> {
                         return CfgPropsTokenId.WHITESPACE;
                     }
-                    case 16:
-                        break;
-                    case 3: {
+                    case 3 -> {
                         return CfgPropsTokenId.ERROR;
                     }
-                    case 17:
-                        break;
-                    case 4: {
+                    case 4 -> {
                         yybegin(YYINITIAL);
                         return CfgPropsTokenId.COMMENT;
                     }
-                    case 18:
-                        break;
-                    case 5: {
+                    case 5 -> {
                         yybegin(YYINITIAL);
                         return CfgPropsTokenId.VALUE;
                     }
-                    case 19:
-                        break;
-                    case 6: {
+                    case 6 -> {
                         yybegin(YYINITIAL);
                         return CfgPropsTokenId.WHITESPACE;
                     }
-                    case 20:
-                        break;
-                    case 7: {
+                    case 7 -> {
                         yybegin(IN_KEY_VALUE_SEPARATOR_TAIL);
                         return CfgPropsTokenId.SEPARATOR;
                     }
-                    case 21:
-                        break;
-                    case 8: {
+                    case 8 -> {
                         yybegin(IN_KEY);
                         return CfgPropsTokenId.DOT;
                     }
-                    case 22:
-                        break;
-                    case 9: {
+                    case 9 -> {
                         yybegin(IN_KEY_INDEX);
                         return CfgPropsTokenId.BRACKET;
                     }
-                    case 23:
-                        break;
-                    case 10: {
+                    case 10 -> {
                         yybegin(IN_KEY);
                         return CfgPropsTokenId.BRACKET;
                     }
-                    case 24:
-                        break;
-                    case 11: {
+                    case 11 -> {
                         yybegin(IN_KEY_INDEX);
                         return CfgPropsTokenId.MAP_KEY;
                     }
-                    case 25:
-                        break;
-                    case 12: {
+                    case 12 -> {
                         yybegin(IN_KEY_INDEX);
                         return CfgPropsTokenId.ARRAY_IDX;
                     }
-                    case 26:
-                        break;
-                    case 13: {
+                    case 13 -> {
                         yybegin(IN_KEY_VALUE_SEPARATOR_HEAD);
                         return CfgPropsTokenId.WHITESPACE;
                     }
-                    case 27:
-                        break;
-                    case 14: {
+                    case 14 -> {
                         yybegin(IN_KEY_VALUE_SEPARATOR_TAIL);
                         return CfgPropsTokenId.WHITESPACE;
                     }
-                    case 28:
-                        break;
-                    default:
-                        zzScanError(ZZ_NO_MATCH);
+                    default -> zzScanError(ZZ_NO_MATCH);
                 }
             }
         }
