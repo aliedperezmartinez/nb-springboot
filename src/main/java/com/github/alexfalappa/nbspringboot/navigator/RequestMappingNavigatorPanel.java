@@ -52,58 +52,17 @@ public class RequestMappingNavigatorPanel implements NavigatorPanel {
     /** Object used as example, replace with your own data source, for example JavaDataObject etc */
     private static final Lookup.Template<DataObject> MY_DATA = new Lookup.Template<>(DataObject.class);
 
+    /** current context to work on. */
+    private Lookup.Result<DataObject> currentContext;
+
+    private final LookupListener contextListener = le -> {};
+    private final MappedElementsModel mappedElementsModel = new MappedElementsModel();
+    private final ETable table = buildTable();
     /**
      * holds UI of this panel.
      */
-    private final JComponent component;
-
-    /** current context to work on. */
-    private Lookup.Result currentContext;
-
-    private final LookupListener contextListener;
-
-    private final ETable table;
-    private final MappedElementsModel mappedElementsModel;
-
-    private final ElementScanningTaskFactory mappedElementGatheringTaskFactory;
-
-    /**
-     * public no arg constructor needed for system to instantiate provider well
-     */
-    public RequestMappingNavigatorPanel() {
-        table = new ETable();
-        mappedElementsModel = new MappedElementsModel();
-        mappedElementGatheringTaskFactory = new ElementScanningTaskFactory(table, mappedElementsModel);
-        table.setModel(mappedElementsModel);
-        table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-        table.setColumnSorted(0, true, 1);
-        table.setDefaultRenderer(RequestMethod.class, new RequestMethodCellRenderer());
-        table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        table.getSelectionModel().addListSelectionListener(event -> {
-            final int selectedRow = ((ListSelectionModel) event.getSource()).getMinSelectionIndex();
-            if (event.getValueIsAdjusting() || selectedRow < 0) {
-                return;
-            }
-            final MappedElement mappedElement = mappedElementsModel.getElementAt(table.convertRowIndexToModel(selectedRow));
-            ElementOpen.open(mappedElement.getFileObject(), mappedElement.getHandle());
-            try {
-                final DataObject dataObject = DataObject.find(mappedElement.getFileObject());
-                final EditorCookie editorCookie = dataObject.getLookup().lookup(EditorCookie.class);
-                if (editorCookie != null) {
-                    editorCookie.openDocument();
-                    JEditorPane[] p = editorCookie.getOpenedPanes();
-                    if (p.length > 0) {
-                        p[0].requestFocus();
-                    }
-                }
-            } catch (IOException e) {
-            }
-        });
-        final JPanel panel = new JPanel(new BorderLayout());
-        panel.add(new JScrollPane(table), BorderLayout.CENTER);
-        this.component = panel;
-        this.contextListener = le -> {};
-    }
+    private final JComponent component = buildPanel();
+    private final ElementScanningTaskFactory mappedElementGatheringTaskFactory = new ElementScanningTaskFactory(table, mappedElementsModel);
 
     @Override
     public String getDisplayHint() {
@@ -138,4 +97,41 @@ public class RequestMappingNavigatorPanel implements NavigatorPanel {
     public Lookup getLookup() {
         return null;
     }
+
+    private ETable buildTable() {
+        final ETable result = new ETable();
+        result.setModel(mappedElementsModel);
+        result.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        result.setColumnSorted(0, true, 1);
+        result.setDefaultRenderer(RequestMethod.class, new RequestMethodCellRenderer());
+        result.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        result.getSelectionModel().addListSelectionListener(event -> {
+            final int selectedRow = ((ListSelectionModel) event.getSource()).getMinSelectionIndex();
+            if (event.getValueIsAdjusting() || selectedRow < 0) {
+                return;
+            }
+            final MappedElement mappedElement = mappedElementsModel.getElementAt(result.convertRowIndexToModel(selectedRow));
+            ElementOpen.open(mappedElement.getFileObject(), mappedElement.getHandle());
+            try {
+                final DataObject dataObject = DataObject.find(mappedElement.getFileObject());
+                final EditorCookie editorCookie = dataObject.getLookup().lookup(EditorCookie.class);
+                if (editorCookie != null) {
+                    editorCookie.openDocument();
+                    JEditorPane[] p = editorCookie.getOpenedPanes();
+                    if (p.length > 0) {
+                        p[0].requestFocus();
+                    }
+                }
+            } catch (IOException e) {
+            }
+        });
+        return result;
+    }
+
+    private JPanel buildPanel() {
+        final JPanel panel = new JPanel(new BorderLayout());
+        panel.add(new JScrollPane(table), BorderLayout.CENTER);
+        return panel;
+    }
+
 }
