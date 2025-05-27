@@ -261,6 +261,7 @@ public class UtilsTest {
     @Test
     public void testCompleteLocale() {
         final String locale = Locale.getDefault().toString();
+        System.out.println("Locale: " + locale);
         doAnswer(invocation -> {
             ValueHint vh = invocation.getArgument(0);
             assertTrue(() -> ((String)vh.getValue()).contains(locale));
