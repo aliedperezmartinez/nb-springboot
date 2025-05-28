@@ -230,6 +230,20 @@ public class ArtifactVersionTest {
     }
 
     @Test
+    public void testToString() {
+        final ArtifactVersion instance = new ArtifactVersion(1, 0, 1, "SNAPSHOT");
+
+        assertEquals("1.0.1-SNAPSHOT", instance.toString());
+    }
+
+    @Test
+    public void testToStringNoModifier() {
+        final ArtifactVersion instance = new ArtifactVersion(1, 0, 1);
+
+        assertEquals("1.0.1", instance.toString());
+    }
+
+    @Test
     public void testCollectionSort() {
         final List<ArtifactVersion> versions = List.of(
                 ArtifactVersion.of("2.4.0-M1"),

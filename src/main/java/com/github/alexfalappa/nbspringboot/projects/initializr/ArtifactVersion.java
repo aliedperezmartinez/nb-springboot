@@ -67,7 +67,8 @@ public record ArtifactVersion(int major, int minor, int patch, String modifier) 
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder(major)
+        final StringBuilder sb = new StringBuilder()
+            .append(major)
             .append('.').append(minor)
             .append('.').append(patch);
         if (modifier!=null) {
