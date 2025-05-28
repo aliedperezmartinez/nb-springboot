@@ -16,6 +16,7 @@
 package com.github.alexfalappa.nbspringboot;
 
 import com.github.alexfalappa.nbspringboot.cfgprops.completion.items.FileObjectCompletionItem;
+import com.github.alexfalappa.nbspringboot.cfgprops.completion.items.ValueCompletionItem;
 import java.awt.Frame;
 import java.awt.Image;
 import java.beans.PropertyChangeListener;
@@ -126,6 +127,8 @@ public class UtilsTest {
     private NbMavenProjectImpl nbMavenProject;
     @Mock
     private Artifact artifact;
+    @Mock
+    private CompletionResultSetImpl completionResultSet;
 
     @Test
     public void testSimpleHtmlEscape() {
@@ -605,6 +608,51 @@ public class UtilsTest {
 
         verify(completionResultSet).addItem(argThat(argument -> {
             return ((FileObjectCompletionItem)argument).getText().equals("file.ext");
+        }));
+    }
+
+    @Test
+    public void testCompleteSpringResourceFileRoot() {
+        Utils.completeSpringResource(fileObject, "file://", CompletionSpiPackageAccessor.get().createCompletionResultSet(completionResultSet), 0, 0);
+
+        // This text runs in Linux or any other UNIX OS.
+        // If needed, add check for Windows.
+        verify(completionResultSet).addItem(argThat(argument -> {
+            return ((FileObjectCompletionItem)argument).getText().equals("/");
+        }));
+    }
+
+    @Test
+    public void testCompleteSpringResourceFileDirectory() {
+        Utils.completeSpringResource(fileObject, "file://src/test/resources/", CompletionSpiPackageAccessor.get().createCompletionResultSet(completionResultSet), 0, 0);
+
+        verify(completionResultSet, atLeastOnce()).addItem(argThat(argument -> {
+            return !((FileObjectCompletionItem)argument).getText().isEmpty();
+        }));
+    }
+
+    @Test
+    public void testCompleteSpringResourceFilePartialFilter() {
+        Utils.completeSpringResource(fileObject, "file://src/test/resources/simple", CompletionSpiPackageAccessor.get().createCompletionResultSet(completionResultSet), 0, 0);
+
+        verify(completionResultSet).addItem(argThat(argument -> {
+            return ((FileObjectCompletionItem)argument).getText().equals("simple.properties");
+        }));
+    }
+
+    @Test
+    public void testCompleteSpringResourceFileException() {
+        Utils.completeSpringResource(fileObject, "file://src/test/resources/simple.properties", CompletionSpiPackageAccessor.get().createCompletionResultSet(completionResultSet), 0, 0);
+
+        verify(completionResultSet, never()).addItem(any(FileObjectCompletionItem.class));
+    }
+
+    @Test
+    public void testCompleteSpringResourceOther() {
+        Utils.completeSpringResource(fileObject, "http", CompletionSpiPackageAccessor.get().createCompletionResultSet(completionResultSet), 0, 0);
+
+        verify(completionResultSet).addItem(argThat(argument -> {
+            return ((ValueCompletionItem)argument).getHint().getValue().equals("http://");
         }));
     }
 

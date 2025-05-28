@@ -73,7 +73,6 @@ import static com.github.alexfalappa.nbspringboot.PrefConstants.PREF_VM_OPTS_LAU
 
 import static java.util.logging.Level.FINE;
 import static java.util.logging.Level.WARNING;
-import static java.util.regex.Pattern.compile;
 /**
  * Utility methods used in the plugin.
  *
@@ -85,7 +84,7 @@ public final class Utils {
     protected static final String SPRING_BOOT_STARTER_ARTIFACT_ID = "spring-boot-starter";
     protected static final String SPRING_BOOT_STARTER_GROUP_ID = "org.springframework.boot";
     private static final Logger logger = Logger.getLogger(Utils.class.getName());
-    private static final Pattern PATTERN_JAVATYPE = compile("(\\w+\\.)+(\\w+)");
+    private static final Pattern PATTERN_JAVATYPE = Pattern.compile("(\\w+\\.)+(\\w+)");
     private static final String PREFIX_CLASSPATH = "classpath:/";
     private static final String PREFIX_FILE = "file://";
     private static final Set<String> resourcePrefixes = Set.of(PREFIX_CLASSPATH, PREFIX_FILE, "http://", "https://");
@@ -359,12 +358,12 @@ public final class Utils {
                 }
             }
         } else {
-            for (String rp : resourcePrefixes) {
-                if (rp.contains(filter)) {
-                    completionResultSet.addItem(new ValueCompletionItem(createHint(rp), dotOffset, caretOffset,
-                            rp.equals(PREFIX_CLASSPATH) || rp.equals(PREFIX_FILE)));
-                }
-            }
+            resourcePrefixes.stream()
+                .filter(rp -> rp.contains(filter))
+                .map(rp ->
+                    new ValueCompletionItem(createHint(rp), dotOffset, caretOffset,
+                        rp.equals(PREFIX_CLASSPATH) || rp.equals(PREFIX_FILE)))
+                .forEachOrdered(completionResultSet::addItem);
         }
     }
 
