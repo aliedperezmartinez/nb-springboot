@@ -33,9 +33,7 @@ import javax.swing.ImageIcon;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.project.MavenProject;
-import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -89,7 +87,6 @@ import static org.mockito.Mockito.when;
  *
  * @author Hector Espert
  */
-@TestMethodOrder(MethodOrderer.DisplayName.class)
 @ExtendWith(MockitoExtension.class)
 public class UtilsTest {
 
