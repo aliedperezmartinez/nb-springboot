@@ -20,6 +20,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.nio.charset.Charset;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -69,7 +70,7 @@ public final class HintSupport {
         if (cachedCharsets == null) {
             cachedCharsets = Charset.availableCharsets().keySet();
         }
-        return cachedCharsets;
+        return Collections.unmodifiableSet(cachedCharsets);
     }
 
     /**
@@ -86,7 +87,7 @@ public final class HintSupport {
                 .filter(locName -> !locName.isEmpty())
                 .collect(Collectors.toSet());
         }
-        return cachedLocales;
+        return Collections.unmodifiableSet(cachedLocales);
     }
 
     /**

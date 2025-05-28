@@ -265,7 +265,6 @@ public class UtilsTest {
     @Test
     public void testCompleteLocale() {
         final String locale = Locale.getDefault().toString();
-        System.out.println("Locale: " + locale);
         doAnswer(invocation -> {
             ValueHint vh = invocation.getArgument(0);
             assertTrue(() -> ((String)vh.getValue()).toLowerCase().contains(locale.toLowerCase()));
@@ -598,7 +597,6 @@ public class UtilsTest {
 
     @Test
     public void testCompleteSpringResourceClassPath() {
-        CompletionResultSetImpl completionResultSet = mock(CompletionResultSetImpl.class);
         FileObject foBase = mock(FileObject.class);
         FileObject fObj = mock(FileObject.class);
         when(fileObject.getFileObject("com.example")).thenReturn(foBase);
