@@ -421,6 +421,7 @@ public final class Utils {
      */
     public static ImageIcon lafDefaultIcon(String iconName) {
         Icon ico = UIManager.getIcon(iconName);
+        if(ico == null) return null;
         BufferedImage image = new BufferedImage(ico.getIconWidth(), ico.getIconHeight(), BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2 = image.createGraphics();
         try {
@@ -440,8 +441,9 @@ public final class Utils {
                 g2.drawLine(0, 0, 16, 16);
                 g2.drawLine(16, 0, 0, 16);
             }
+        } finally {
+            g2.dispose();
         }
-        g2.dispose();
         return new ImageIcon(image);
     }
 

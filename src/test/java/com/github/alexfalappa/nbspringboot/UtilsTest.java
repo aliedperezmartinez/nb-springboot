@@ -29,6 +29,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 import javax.swing.Action;
+import javax.swing.ImageIcon;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.project.MavenProject;
@@ -654,6 +655,20 @@ public class UtilsTest {
         verify(completionResultSet).addItem(argThat(argument -> {
             return ((ValueCompletionItem)argument).getHint().getValue().equals("http://");
         }));
+    }
+
+    @Test
+    public void testLafDefaultIconNonExisting() {
+        assertNull(Utils.lafDefaultIcon("non-existing"));
+    }
+
+    @Test
+    public void testLafDefaultIcon() {
+        final ImageIcon result = Utils.lafDefaultIcon("FileView.directoryIcon");
+
+        assertEquals(18, result.getIconHeight());
+        assertEquals(16, result.getIconWidth());
+
     }
 
     private static Dependency createDependency(String artifactId) {
