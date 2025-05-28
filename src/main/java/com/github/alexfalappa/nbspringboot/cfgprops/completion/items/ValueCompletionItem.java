@@ -54,13 +54,13 @@ import com.github.alexfalappa.nbspringboot.cfgprops.completion.doc.CfgPropValueC
 public class ValueCompletionItem implements CompletionItem {
 
     private static final Logger logger = Logger.getLogger(ValueCompletionItem.class.getName());
-    private final ValueHint hint;
     private static final ImageIcon fieldIcon = new ImageIcon(ImageUtilities.loadImage(
             "com/github/alexfalappa/nbspringboot/cfgprops/completion/springboot-value.png"));
-    private final int caretOffset;
+    private final ValueHint hint;
     private final int dotOffset;
+    private final int caretOffset;
+    private final boolean continueCompletion;
     private boolean overwrite;
-    private boolean continueCompletion;
 
     public ValueCompletionItem(ValueHint hint, int dotOffset, int caretOffset) {
         this(hint, dotOffset, caretOffset, false);
@@ -85,6 +85,10 @@ public class ValueCompletionItem implements CompletionItem {
         return null;
     }
 
+    public boolean isOverwrite() {
+        return overwrite;
+    }
+
     @Override
     public void defaultAction(JTextComponent jtc) {
         logger.log(Level.FINER, "Accepted value completion: {0}", hint.toString());
@@ -92,7 +96,7 @@ public class ValueCompletionItem implements CompletionItem {
             StyledDocument doc = (StyledDocument) jtc.getDocument();
             // calculate the amount of chars to remove (by default from dot up to caret position)
             int lenToRemove = caretOffset - dotOffset;
-            if (overwrite) {
+            if (isOverwrite()) {
                 // NOTE: the editor removes by itself the word at caret when ctrl + enter is pressed
                 // the document state here is different from when the completion was invoked thus we have to
                 // find again the offset of the equal sign in the line
@@ -130,7 +134,7 @@ public class ValueCompletionItem implements CompletionItem {
     @Override
     public void processKeyEvent(KeyEvent evt) {
         // detect if Ctrl + Enter is pressed
-        overwrite = evt.getKeyCode() == KeyEvent.VK_ENTER && (evt.getModifiers() & KeyEvent.CTRL_MASK) != 0;
+        overwrite = evt.getKeyCode() == KeyEvent.VK_ENTER && (evt.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0;
     }
 
     @Override
@@ -149,13 +153,7 @@ public class ValueCompletionItem implements CompletionItem {
     @Override
     public CompletionTask createDocumentationTask() {
         if (hint.getDescription() != null) {
-            return new AsyncCompletionTask(new AsyncCompletionQuery() {
-                @Override
-                protected void query(CompletionResultSet completionResultSet, Document document, int i) {
-                    completionResultSet.setDocumentation(new CfgPropValueCompletionDocumentation(hint));
-                    completionResultSet.finish();
-                }
-            });
+            return new AsyncCompletionTask(new AsyncCompletionQueryImpl(hint));
         } else {
             return null;
         }
@@ -184,6 +182,21 @@ public class ValueCompletionItem implements CompletionItem {
     @Override
     public CharSequence getInsertPrefix() {
         return hint.getValue().toString();
+    }
+
+    private static class AsyncCompletionQueryImpl extends AsyncCompletionQuery {
+
+        private final ValueHint hint;
+
+        public AsyncCompletionQueryImpl(ValueHint hint) {
+            this.hint = hint;
+        }
+
+        @Override
+        protected void query(CompletionResultSet completionResultSet, Document document, int i) {
+            completionResultSet.setDocumentation(new CfgPropValueCompletionDocumentation(hint));
+            completionResultSet.finish();
+        }
     }
 
 }
