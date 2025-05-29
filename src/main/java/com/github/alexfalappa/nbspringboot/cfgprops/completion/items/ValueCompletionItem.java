@@ -85,7 +85,7 @@ public class ValueCompletionItem implements CompletionItem {
         return null;
     }
 
-    public boolean isOverwrite() {
+    boolean isOverwrite() {
         return overwrite;
     }
 

@@ -60,10 +60,9 @@ public class ValueCompletionItemTest {
     @Test
     public void testDefaultAction() throws BadLocationException {
         final String value = "value";
-        final ValueHint hint = buildHint(value);
         when(component.getDocument()).thenReturn(doc);
 
-        ValueCompletionItem instance = new ValueCompletionItem(hint, 0, 0);
+        ValueCompletionItem instance = new ValueCompletionItem(buildHint(value), 0, 0);
 
         instance.defaultAction(component);
 
@@ -74,12 +73,11 @@ public class ValueCompletionItemTest {
     @Test
     public void testDefaultActionOverwrite() throws BadLocationException {
         final String value = "value";
-        final ValueHint hint = buildHint(value);
         when(component.getDocument()).thenReturn(doc);
         when(doc.getParagraphElement(anyInt())).thenReturn(lineElement);
         when(doc.getText(anyInt(), anyInt())).thenReturn("key=value");
 
-        ValueCompletionItem instance = new ValueCompletionItem(hint, 0, 0);
+        ValueCompletionItem instance = new ValueCompletionItem(buildHint(value), 0, 0);
         instance.processKeyEvent(keyEventOverwrite());
 
         instance.defaultAction(component);
@@ -91,12 +89,11 @@ public class ValueCompletionItemTest {
     @Test
     public void testDefaultActionOverwriteColon() throws BadLocationException {
         final String value = "value";
-        final ValueHint hint = buildHint(value);
         when(component.getDocument()).thenReturn(doc);
         when(doc.getParagraphElement(anyInt())).thenReturn(lineElement);
         when(doc.getText(anyInt(), anyInt())).thenReturn("key:value");
 
-        ValueCompletionItem instance = new ValueCompletionItem(hint, 0, 0);
+        ValueCompletionItem instance = new ValueCompletionItem(buildHint(value), 0, 0);
         instance.processKeyEvent(keyEventOverwrite());
 
         instance.defaultAction(component);
@@ -108,12 +105,11 @@ public class ValueCompletionItemTest {
     @Test
     public void testDefaultActionOverwriteComma() throws BadLocationException {
         final String value = "value";
-        final ValueHint hint = buildHint(value);
         when(component.getDocument()).thenReturn(doc);
         when(doc.getParagraphElement(anyInt())).thenReturn(lineElement);
         when(doc.getText(anyInt(), anyInt())).thenReturn("key,value");
 
-        ValueCompletionItem instance = new ValueCompletionItem(hint, 0, 0);
+        ValueCompletionItem instance = new ValueCompletionItem(buildHint(value), 0, 0);
         instance.processKeyEvent(keyEventOverwrite());
 
         instance.defaultAction(component);
@@ -125,13 +121,12 @@ public class ValueCompletionItemTest {
     @Test
     public void testDefaultActionOverwriteOther() throws BadLocationException {
         final String value = "value";
-        final ValueHint hint = buildHint(value);
         when(component.getDocument()).thenReturn(doc);
         when(doc.getParagraphElement(anyInt())).thenReturn(lineElement);
         when(doc.getText(anyInt(), anyInt())).thenReturn("key");
         when(lineElement.getEndOffset()).thenReturn(4);
 
-        ValueCompletionItem instance = new ValueCompletionItem(hint, 0, 0);
+        ValueCompletionItem instance = new ValueCompletionItem(buildHint(value), 0, 0);
         instance.processKeyEvent(keyEventOverwrite());
 
         instance.defaultAction(component);
@@ -169,12 +164,11 @@ public class ValueCompletionItemTest {
 
     @Test
     public void testCreateDocumentationTask() throws InterruptedException, InvocationTargetException {
-        final ValueHint hint = buildHint("value", "description");
         final CompletionResultSet completionResultSet = CompletionSpiPackageAccessor.get()
             .createCompletionResultSet(completionResultSetImpl);
         when(completionResultSetImpl.isFinished()).thenReturn(Boolean.TRUE, Boolean.FALSE);
 
-        final ValueCompletionItem instance = new ValueCompletionItem(hint, 0, 0);
+        final ValueCompletionItem instance = new ValueCompletionItem(buildHint("value", "description"), 0, 0);
 
         final AsyncCompletionTask result = (AsyncCompletionTask) instance.createDocumentationTask();
 
