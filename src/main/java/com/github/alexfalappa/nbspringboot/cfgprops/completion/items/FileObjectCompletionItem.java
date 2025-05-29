@@ -65,14 +65,20 @@ public class FileObjectCompletionItem implements CompletionItem {
         return null;
     }
 
+    boolean isOverwrite() {
+        return overwrite;
+    }
+
     @Override
     public void defaultAction(JTextComponent jtc) {
-        logger.log(Level.FINER, "Accepted file object completion: {0}", FileUtil.getFileDisplayName(fileObj));
+        if (logger.isLoggable(Level.FINER)) {
+            logger.log(Level.FINER, "Accepted file object completion: {0}", FileUtil.getFileDisplayName(fileObj));
+        }
         try {
             StyledDocument doc = (StyledDocument) jtc.getDocument();
             // calculate the amount of chars to remove (by default from dot up to caret position)
             int lenToRemove = caretOffset - dotOffset;
-            if (overwrite) {
+            if (isOverwrite()) {
                 // NOTE: the editor removes by itself the word at caret when ctrl + enter is pressed
                 // the document state here is different from when the completion was invoked thus we have to
                 // find again the offset of the equal sign in the line
@@ -116,7 +122,7 @@ public class FileObjectCompletionItem implements CompletionItem {
     @Override
     public void processKeyEvent(KeyEvent evt) {
         // detect if Ctrl + Enter is pressed
-        overwrite = evt.getKeyCode() == KeyEvent.VK_ENTER && (evt.getModifiers() & KeyEvent.CTRL_MASK) != 0;
+        overwrite = evt.getKeyCode() == KeyEvent.VK_ENTER && (evt.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0;
     }
 
     @Override
