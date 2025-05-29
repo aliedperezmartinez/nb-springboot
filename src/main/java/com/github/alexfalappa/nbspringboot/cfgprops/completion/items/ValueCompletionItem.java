@@ -77,18 +77,6 @@ public class ValueCompletionItem implements CompletionItem {
         return hint;
     }
 
-    public String getText() {
-        return Utils.simpleHtmlEscape(hint.getValue().toString());
-    }
-
-    public String getTextRight() {
-        return null;
-    }
-
-    boolean isOverwrite() {
-        return overwrite;
-    }
-
     @Override
     public void defaultAction(JTextComponent jtc) {
         logger.log(Level.FINER, "Accepted value completion: {0}", hint.toString());
@@ -182,6 +170,18 @@ public class ValueCompletionItem implements CompletionItem {
     @Override
     public CharSequence getInsertPrefix() {
         return hint.getValue().toString();
+    }
+
+    boolean isOverwrite() {
+        return overwrite;
+    }
+
+    private String getText() {
+        return Utils.simpleHtmlEscape(hint.getValue().toString());
+    }
+
+    private String getTextRight() {
+        return null;
     }
 
     private static class AsyncCompletionQueryImpl extends AsyncCompletionQuery {

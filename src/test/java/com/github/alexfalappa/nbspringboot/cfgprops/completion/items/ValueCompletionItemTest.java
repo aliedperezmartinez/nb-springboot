@@ -10,7 +10,6 @@ import javax.swing.text.JTextComponent;
 import javax.swing.text.StyledDocument;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.netbeans.modules.editor.completion.CompletionResultSetImpl;
@@ -24,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -40,22 +40,6 @@ public class ValueCompletionItemTest {
     private CompletionResultSetImpl completionResultSetImpl;
     @Mock
     private Element lineElement;
-
-    @Test
-    public void testGetText() {
-        final ValueCompletionItem instance = new ValueCompletionItem(buildHint("<a&b>"), 0, 0);
-
-        final String result = instance.getText();
-
-        assertEquals("&lt;a&amp;b&gt;", result);
-    }
-
-    @Test
-    public void testGetTextRight() {
-        final ValueCompletionItem instance = new ValueCompletionItem(new ValueHint(), 0, 0);
-
-        assertNull(instance.getTextRight());
-    }
 
     @Test
     public void testDefaultAction() throws BadLocationException {
@@ -178,9 +162,8 @@ public class ValueCompletionItemTest {
            Doesn't happen when the test alone or the test file alone is executed.
         */
         Thread.sleep(5000);
-        verify(completionResultSetImpl).setDocumentation(ArgumentMatchers.argThat(argument -> {
-            final String text = argument.getText();
-            return text.equals("<b>value</b><br/>description");
+        verify(completionResultSetImpl).setDocumentation(argThat(argument -> {
+            return argument.getText().equals("<b>value</b><br/>description");
         }));
         verify(completionResultSetImpl).finish();
     }

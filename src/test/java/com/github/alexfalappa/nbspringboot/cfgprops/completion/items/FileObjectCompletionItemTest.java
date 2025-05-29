@@ -47,13 +47,6 @@ public class FileObjectCompletionItemTest {
     }
 
     @Test
-    public void testGetTextRight() {
-        final FileObjectCompletionItem instance = new FileObjectCompletionItem(fileObj, 0, 0);
-
-        assertNull(instance.getTextRight());
-    }
-
-    @Test
     public void testDefaultAction() throws BadLocationException, FileStateInvalidException {
         final String fileName = "file.ext";
         when(fileObj.getNameExt()).thenReturn(fileName);

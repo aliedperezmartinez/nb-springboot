@@ -61,14 +61,6 @@ public class FileObjectCompletionItem implements CompletionItem {
         return fileObj.getNameExt();
     }
 
-    public String getTextRight() {
-        return null;
-    }
-
-    boolean isOverwrite() {
-        return overwrite;
-    }
-
     @Override
     public void defaultAction(JTextComponent jtc) {
         if (logger.isLoggable(Level.FINER)) {
@@ -167,6 +159,14 @@ public class FileObjectCompletionItem implements CompletionItem {
     @Override
     public CharSequence getInsertPrefix() {
         return getText();
+    }
+
+    boolean isOverwrite() {
+        return overwrite;
+    }
+
+    private String getTextRight() {
+        return null;
     }
 
 }
