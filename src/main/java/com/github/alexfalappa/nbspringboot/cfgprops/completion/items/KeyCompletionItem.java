@@ -67,18 +67,6 @@ public class KeyCompletionItem implements CompletionItem {
         this.caretOffset = caretOffset;
     }
 
-    public ValueHint getHint() {
-        return hint;
-    }
-
-    public String getText() {
-        return Utils.simpleHtmlEscape(hint.getValue().toString());
-    }
-
-    public String getTextRight() {
-        return null;
-    }
-
     @Override
     public void defaultAction(JTextComponent jtc) {
         logger.log(Level.FINER, "Accepted key value hint: {0}", hint.toString());
@@ -175,6 +163,18 @@ public class KeyCompletionItem implements CompletionItem {
     @Override
     public CharSequence getInsertPrefix() {
         return hint.getValue().toString();
+    }
+
+    boolean isOverwrite() {
+        return overwrite;
+    }
+
+    private String getText() {
+        return Utils.simpleHtmlEscape(hint.getValue().toString());
+    }
+
+    private String getTextRight() {
+        return null;
     }
 
 }
