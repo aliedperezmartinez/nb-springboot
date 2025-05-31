@@ -66,13 +66,12 @@ public class CfgPropCompletionItem implements CompletionItem {
     private final ConfigurationMetadataProperty configurationMeta;
     private final int caretOffset;
     private final int propStartOffset;
-    private boolean overwrite;
+    private boolean overwrite = false;
     private final String type;
     private final boolean sortDeprLast;
 
     public CfgPropCompletionItem(ConfigurationMetadataProperty configurationMeta, int propStartOffset, int caretOffset,
             boolean sortDeprLast) {
-        this.overwrite = false;
         this.configurationMeta = configurationMeta;
         if (configurationMeta.getType() != null) {
             type = simpleHtmlEscape(shortenJavaType(configurationMeta.getType()));
@@ -82,18 +81,6 @@ public class CfgPropCompletionItem implements CompletionItem {
         this.propStartOffset = propStartOffset;
         this.caretOffset = caretOffset;
         this.sortDeprLast = sortDeprLast;
-    }
-
-    public ConfigurationMetadataProperty getConfigurationMetadata() {
-        return configurationMeta;
-    }
-
-    public String getText() {
-        return configurationMeta.getId();
-    }
-
-    public String getTextRight() {
-        return type;
     }
 
     @Override
@@ -171,7 +158,7 @@ public class CfgPropCompletionItem implements CompletionItem {
     @Override
     public void processKeyEvent(KeyEvent evt) {
         // detect if Ctrl + Enter is pressed
-        overwrite = evt.getKeyCode() == KeyEvent.VK_ENTER && (evt.getModifiers() & KeyEvent.CTRL_MASK) != 0;
+        overwrite = evt.getKeyCode() == KeyEvent.VK_ENTER && (evt.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0;
     }
 
     @Override
@@ -195,13 +182,7 @@ public class CfgPropCompletionItem implements CompletionItem {
 
     @Override
     public CompletionTask createDocumentationTask() {
-        return new AsyncCompletionTask(new AsyncCompletionQuery() {
-            @Override
-            protected void query(CompletionResultSet completionResultSet, Document document, int i) {
-                completionResultSet.setDocumentation(new CfgPropCompletionDocumentation(configurationMeta));
-                completionResultSet.finish();
-            }
-        });
+        return new AsyncCompletionTask(new AsyncCompletionQueryImpl(configurationMeta));
     }
 
     @Override
@@ -229,6 +210,22 @@ public class CfgPropCompletionItem implements CompletionItem {
         return getText();
     }
 
+    boolean isOverwrite() {
+        return overwrite;
+    }
+
+    String getType() {
+        return type;
+    }
+
+    private String getText() {
+        return configurationMeta.getId();
+    }
+
+    private String getTextRight() {
+        return getType();
+    }
+
     private boolean canCompleteKey() {
         final Hints hints = configurationMeta.getHints();
         if (hints == null) {
@@ -240,7 +237,7 @@ public class CfgPropCompletionItem implements CompletionItem {
         if (!hints.getKeyProviders().isEmpty()) {
             return true;
         }
-        return isCompletableType();
+        return isCompletableType(configurationMeta.getType());
     }
 
     private boolean canCompleteValue() {
@@ -254,27 +251,25 @@ public class CfgPropCompletionItem implements CompletionItem {
         if (!hints.getValueProviders().isEmpty()) {
             return true;
         }
-        return isCompletableType();
+        return isCompletableType(configurationMeta.getType());
     }
 
-    private boolean isCompletableType() {
-        final String dataType = configurationMeta.getType();
-        switch (dataType) {
-            case "java.lang.Boolean":
-            case "java.nio.charset.Charset":
-            case "java.util.Locale":
-            case "org.springframework.core.io.Resource":
-            case "org.springframework.util.MimeType":
-            case "java.util.List<java.lang.Boolean>":
-            case "java.util.Set<java.lang.Boolean>":
-            case "java.util.List<org.springframework.core.io.Resource>":
-            case "java.util.Set<org.springframework.core.io.Resource>":
-            case "java.util.List<java.nio.charset.Charset>":
-            case "java.util.Set<java.nio.charset.Charset>":
-            case "java.util.List<java.util.Locale>":
-            case "java.util.Set<java.util.Locale>":
-                return true;
-            default:
+    private static boolean isCompletableType(String dataType) {
+        return switch (dataType) {
+            case "java.lang.Boolean",
+                "java.nio.charset.Charset",
+                "java.util.Locale",
+                "org.springframework.core.io.Resource",
+                "org.springframework.util.MimeType",
+                "java.util.List<java.lang.Boolean>",
+                "java.util.Set<java.lang.Boolean>",
+                "java.util.List<org.springframework.core.io.Resource>",
+                "java.util.Set<org.springframework.core.io.Resource>",
+                "java.util.List<java.nio.charset.Charset>",
+                "java.util.Set<java.nio.charset.Charset>",
+                "java.util.List<java.util.Locale>",
+                "java.util.Set<java.util.Locale>"
+                -> true;
 // TODO try to interpret the targetType as an enum
 //                try {
 //                    Object[] enumvals = cp.getClassLoader(true).loadClass(dataType).getEnumConstants();
@@ -282,8 +277,23 @@ public class CfgPropCompletionItem implements CompletionItem {
 //                } catch (ClassNotFoundException ex) {
 //                    return false;
 //                }
+            default -> false;
+        };
+    }
+
+    private static class AsyncCompletionQueryImpl extends AsyncCompletionQuery {
+
+        private final ConfigurationMetadataProperty configurationMeta;
+
+        public AsyncCompletionQueryImpl(ConfigurationMetadataProperty configurationMeta) {
+            this.configurationMeta = configurationMeta;
         }
-        return false;
+
+        @Override
+        protected void query(CompletionResultSet completionResultSet, Document document, int i) {
+            completionResultSet.setDocumentation(new CfgPropCompletionDocumentation(configurationMeta));
+            completionResultSet.finish();
+        }
     }
 
 }
