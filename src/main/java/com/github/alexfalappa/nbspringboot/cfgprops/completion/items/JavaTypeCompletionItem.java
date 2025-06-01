@@ -15,16 +15,12 @@
  */
 package com.github.alexfalappa.nbspringboot.cfgprops.completion.items;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.lang.model.element.ElementKind;
 import javax.swing.ImageIcon;
-import javax.swing.UIManager;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Element;
 import javax.swing.text.JTextComponent;
@@ -33,9 +29,7 @@ import javax.swing.text.StyledDocument;
 import org.netbeans.api.editor.completion.Completion;
 import org.netbeans.api.java.source.ui.ElementIcons;
 import org.netbeans.editor.BaseDocument;
-import org.netbeans.spi.editor.completion.CompletionItem;
 import org.netbeans.spi.editor.completion.CompletionTask;
-import org.netbeans.spi.editor.completion.support.CompletionUtilities;
 import org.openide.util.Exceptions;
 
 /**
@@ -45,14 +39,13 @@ import org.openide.util.Exceptions;
  *
  * @author Alessandro Falappa
  */
-public class JavaTypeCompletionItem implements CompletionItem {
+public class JavaTypeCompletionItem extends BaseCompletiomItem {
 
     private static final Logger logger = Logger.getLogger(JavaTypeCompletionItem.class.getName());
     private final String name;
     private final ElementKind elementKind;
     private final int dotOffset;
     private final int caretOffset;
-    private boolean overwrite;
     private boolean isKeyCompletion;
 
     public JavaTypeCompletionItem(String name, ElementKind elementKind, int dotOffset, int caretOffset) {
@@ -67,14 +60,6 @@ public class JavaTypeCompletionItem implements CompletionItem {
         this.isKeyCompletion = isKeyCompletion;
     }
 
-    public String getText() {
-        return name;
-    }
-
-    public String getTextRight() {
-        return null;
-    }
-
     @Override
     public void defaultAction(JTextComponent jtc) {
         logger.log(Level.FINER, "Accepted java type completion: {0} {1}", new Object[]{elementKind.toString(), name});
@@ -82,7 +67,7 @@ public class JavaTypeCompletionItem implements CompletionItem {
             StyledDocument doc = (StyledDocument) jtc.getDocument();
             // calculate the amount of chars to remove (by default from dot up to caret position)
             int lenToRemove = caretOffset - dotOffset;
-            if (overwrite) {
+            if (isOverwrite()) {
                 // NOTE: the editor removes by itself the word at caret when ctrl + enter is pressed
                 // the document state here is different from when the completion was invoked thus we have to
                 // find again the offset of the equal sign in the line
@@ -140,35 +125,17 @@ public class JavaTypeCompletionItem implements CompletionItem {
             evt.consume();
         }
         // detect if Ctrl + Enter is pressed
-        overwrite = evt.getKeyCode() == KeyEvent.VK_ENTER && (evt.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0;
+        super.processKeyEvent(evt);
     }
 
     @Override
-    public int getPreferredWidth(Graphics graphics, Font font) {
-        return CompletionUtilities.getPreferredWidth(getText(), getTextRight(), graphics, font);
-    }
-
-    @Override
-    public void render(Graphics g, Font defaultFont, Color defaultColor, Color backgroundColor, int width, int height,
-            boolean selected) {
-        final Color color = selected ? UIManager.getColor("List.selectionForeground") : UIManager.getColor("List.foreground");
-        CompletionUtilities.renderHtml((ImageIcon) ElementIcons.getElementIcon(elementKind, null), getText(), getTextRight(),
-                g, defaultFont, color, width, height, selected);
+    protected ImageIcon getIcon() {
+        return (ImageIcon) ElementIcons.getElementIcon(elementKind, null);
     }
 
     @Override
     public CompletionTask createDocumentationTask() {
         return null;
-    }
-
-    @Override
-    public CompletionTask createToolTipTask() {
-        return null;
-    }
-
-    @Override
-    public boolean instantSubstitution(JTextComponent component) {
-        return false;
     }
 
     @Override
@@ -186,8 +153,9 @@ public class JavaTypeCompletionItem implements CompletionItem {
         return getText();
     }
 
-    boolean isOverwrite() {
-        return overwrite;
+    @Override
+    protected String getText() {
+        return name;
     }
 
 }

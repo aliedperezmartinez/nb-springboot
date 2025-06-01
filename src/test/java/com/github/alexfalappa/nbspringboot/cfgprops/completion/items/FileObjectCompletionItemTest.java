@@ -14,9 +14,7 @@ import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileStateInvalidException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -160,42 +158,10 @@ public class FileObjectCompletionItemTest {
     }
 
     @Test
-    public void testProcessKeyEvent() {
-        final FileObjectCompletionItem instance = new FileObjectCompletionItem(fileObj, 0, 0);
-
-        instance.processKeyEvent(new KeyEvent(source, 0, 0, 0, KeyEvent.VK_0, '0'));
-
-        assertFalse(instance.isOverwrite());
-    }
-
-    @Test
-    public void testProcessKeyEventCtrlEnter() {
-        final FileObjectCompletionItem instance = new FileObjectCompletionItem(fileObj, 0, 0);
-
-        instance.processKeyEvent(keyEventOverwrite());
-
-        assertTrue(instance.isOverwrite());
-    }
-
-    @Test
     public void testCreateDocumentationTask() {
         final FileObjectCompletionItem instance = new FileObjectCompletionItem(fileObj, 0, 0);
 
         assertNull(instance.createDocumentationTask());
-    }
-
-    @Test
-    public void testCreateToolTipTask() {
-        final FileObjectCompletionItem instance = new FileObjectCompletionItem(fileObj, 0, 0);
-
-        assertNull(instance.createToolTipTask());
-    }
-
-    @Test
-    public void testInstantSubstitution() {
-        final FileObjectCompletionItem instance = new FileObjectCompletionItem(fileObj, 0, 0);
-
-        assertFalse(instance.instantSubstitution(component));
     }
 
     @Test

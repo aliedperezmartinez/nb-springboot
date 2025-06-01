@@ -15,41 +15,34 @@
  */
 package com.github.alexfalappa.nbspringboot.cfgprops.completion.items;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.event.KeyEvent;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.swing.UIManager;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Element;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.StyledDocument;
 
 import org.netbeans.api.editor.completion.Completion;
-import org.netbeans.spi.editor.completion.CompletionItem;
 import org.netbeans.spi.editor.completion.CompletionTask;
-import org.netbeans.spi.editor.completion.support.CompletionUtilities;
 import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;
 import org.openide.util.Exceptions;
 
 import com.github.alexfalappa.nbspringboot.projects.service.impl.HintSupport;
+import javax.swing.ImageIcon;
 
 /**
  * The implementation of {@code CompletionItem} for file objects.
  *
  * @author Alessandro Falappa
  */
-public class FileObjectCompletionItem implements CompletionItem {
+public class FileObjectCompletionItem extends BaseCompletiomItem {
 
     private static final Logger logger = Logger.getLogger(FileObjectCompletionItem.class.getName());
     private final int caretOffset;
     private final FileObject fileObj;
     private final int dotOffset;
-    private boolean overwrite;
 
     public FileObjectCompletionItem(FileObject fileObj, int dotOffset, int caretOffset) {
         this.fileObj = fileObj;
@@ -57,6 +50,7 @@ public class FileObjectCompletionItem implements CompletionItem {
         this.caretOffset = caretOffset;
     }
 
+    @Override
     public String getText() {
         return fileObj.getNameExt();
     }
@@ -112,38 +106,13 @@ public class FileObjectCompletionItem implements CompletionItem {
     }
 
     @Override
-    public void processKeyEvent(KeyEvent evt) {
-        // detect if Ctrl + Enter is pressed
-        overwrite = evt.getKeyCode() == KeyEvent.VK_ENTER && (evt.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0;
-    }
-
-    @Override
-    public int getPreferredWidth(Graphics graphics, Font font) {
-        return CompletionUtilities.getPreferredWidth(getText(), getTextRight(), graphics, font);
-    }
-
-    @Override
-    public void render(Graphics g, Font defaultFont, Color defaultColor, Color backgroundColor, int width, int height,
-            boolean selected) {
-        final Color color = selected ? UIManager.getColor("List.selectionForeground") : UIManager.getColor("List.foreground");
-        CompletionUtilities
-                .renderHtml(HintSupport.getIconFor(FileUtil.toFile(fileObj)), getText(), getTextRight(), g, defaultFont, color,
-                        width, height, selected);
+    protected ImageIcon getIcon() {
+        return HintSupport.getIconFor(FileUtil.toFile(fileObj));
     }
 
     @Override
     public CompletionTask createDocumentationTask() {
         return null;
-    }
-
-    @Override
-    public CompletionTask createToolTipTask() {
-        return null;
-    }
-
-    @Override
-    public boolean instantSubstitution(JTextComponent component) {
-        return false;
     }
 
     @Override
@@ -159,14 +128,6 @@ public class FileObjectCompletionItem implements CompletionItem {
     @Override
     public CharSequence getInsertPrefix() {
         return getText();
-    }
-
-    boolean isOverwrite() {
-        return overwrite;
-    }
-
-    private String getTextRight() {
-        return null;
     }
 
 }

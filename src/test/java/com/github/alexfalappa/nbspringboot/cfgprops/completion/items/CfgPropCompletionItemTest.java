@@ -1,11 +1,13 @@
 package com.github.alexfalappa.nbspringboot.cfgprops.completion.items;
 
 import com.github.alexfalappa.nbspringboot.PrefConstants;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.KeyEvent;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Element;
 import javax.swing.text.JTextComponent;
@@ -22,14 +24,13 @@ import org.netbeans.spi.editor.completion.CompletionResultSet;
 import org.netbeans.spi.editor.completion.support.AsyncCompletionTask;
 import org.openide.util.NbPreferences;
 import org.springframework.boot.configurationmetadata.ConfigurationMetadataProperty;
+import org.springframework.boot.configurationmetadata.Deprecation;
 import org.springframework.boot.configurationmetadata.Hints;
 import org.springframework.boot.configurationmetadata.ValueHint;
 import org.springframework.boot.configurationmetadata.ValueProvider;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.verify;
@@ -52,15 +53,6 @@ public class CfgPropCompletionItemTest {
     private StyledDocument doc;
     @Mock
     private Element lineElement;
-
-    @Test
-    public void testType() {
-        when(configurationMeta.getType()).thenReturn("java.lang.String");
-
-        final CfgPropCompletionItem instance = new CfgPropCompletionItem(configurationMeta, 0, 0, true);
-
-        assertEquals("String", instance.getType());
-    }
 
     @Test
     public void testDefaultAction() throws BadLocationException {
@@ -374,24 +366,6 @@ public class CfgPropCompletionItemTest {
     }
 
     @Test
-    public void testProcessKeyEvent() {
-        final CfgPropCompletionItem instance = new CfgPropCompletionItem(configurationMeta, 0, 0, true);
-
-        instance.processKeyEvent(new KeyEvent(source, 0, 0, 0, KeyEvent.VK_0, '0'));
-
-        assertFalse(instance.isOverwrite());
-    }
-
-    @Test
-    public void testProcessKeyEventCtrlEnter() {
-        final CfgPropCompletionItem instance = new CfgPropCompletionItem(configurationMeta, 0, 0, true);
-
-        instance.processKeyEvent(keyEventOverwrite());
-
-        assertTrue(instance.isOverwrite());
-    }
-
-    @Test
     public void testCreateDocumentationTask() throws InterruptedException, InvocationTargetException {
         final CompletionResultSet completionResultSet = CompletionSpiPackageAccessor.get()
             .createCompletionResultSet(completionResultSetImpl);
@@ -412,20 +386,6 @@ public class CfgPropCompletionItemTest {
             return argument.getText().equals("<b>null</b>");
         }));
         verify(completionResultSetImpl).finish();
-    }
-
-    @Test
-    public void testCreateToolTipTask() {
-        final CfgPropCompletionItem instance = new CfgPropCompletionItem(configurationMeta, 0, 0, true);
-
-        assertNull(instance.createToolTipTask());
-    }
-
-    @Test
-    public void testInstantSubstitution() {
-        final CfgPropCompletionItem instance = new CfgPropCompletionItem(configurationMeta, 0, 0, true);
-
-        assertFalse(instance.instantSubstitution(component));
     }
 
     @Test
@@ -486,8 +446,99 @@ public class CfgPropCompletionItemTest {
         assertEquals(id, result);
     }
 
+    @Test
+    public void testGetTextRightNull() {
+        final CfgPropCompletionItem instance = new CfgPropCompletionItem(configurationMeta, 0, 0, true);
+
+        assertNull(instance.getTextRight());
+    }
+
+    @Test
+    public void testGetTextRight() {
+        when(configurationMeta.getType()).thenReturn("java.util.List<java.lang.String>");
+        final CfgPropCompletionItem instance = new CfgPropCompletionItem(configurationMeta, 0, 0, true);
+
+        assertEquals("List&lt;String&gt;", instance.getTextRight());
+    }
+
+    @Test
+    public void testGetDefaultColorSelected(){
+        final CfgPropCompletionItem instance = new CfgPropCompletionItem(configurationMeta, 0, 0, true);
+
+        final Color result = instance.getDefaultColor(true);
+
+        assertEquals(UIManager.getColor("List.selectionForeground"), result);
+    }
+
+    @Test
+    public void testGetDefaultColorNotSelectedDeprecated(){
+        final Deprecation deprecation = createDeprecation(Deprecation.Level.ERROR);
+        when(configurationMeta.getDeprecation()).thenReturn(deprecation);
+
+        final CfgPropCompletionItem instance = new CfgPropCompletionItem(configurationMeta, 0, 0, true);
+
+        final Color result = instance.getDefaultColor(false);
+
+        assertEquals(UIManager.getColor("nb.errorForeground"), result);
+    }
+
+    @Test
+    public void testGetDefaultColorNotSelectedNotDeprecated(){
+        final Deprecation deprecation = createDeprecation(Deprecation.Level.WARNING);
+        when(configurationMeta.getDeprecation()).thenReturn(deprecation);
+
+        final CfgPropCompletionItem instance = new CfgPropCompletionItem(configurationMeta, 0, 0, true);
+
+        final Color result = instance.getDefaultColor(false);
+
+        assertEquals(UIManager.getColor("List.foreground"), result);
+    }
+
+    @Test
+    public void testGetText() {
+        final String id = "id";
+        when(configurationMeta.getId()).thenReturn(id);
+
+        final CfgPropCompletionItem instance = new CfgPropCompletionItem(configurationMeta, 0, 0, true);
+
+        final String result = instance.getText();
+
+        assertEquals(id, result);
+    }
+
+    @Test
+    public void testGetRenderText() {
+        final String id = "id";
+        when(configurationMeta.getId()).thenReturn(id);
+
+        final CfgPropCompletionItem instance = new CfgPropCompletionItem(configurationMeta, 0, 0, true);
+
+        final String result = instance.getRenderText();
+
+        assertEquals(id, result);
+    }
+
+    @Test
+    public void testGetRenderTextDeprecated() {
+        final String id = "id";
+        when(configurationMeta.getId()).thenReturn(id);
+        when(configurationMeta.isDeprecated()).thenReturn(Boolean.TRUE);
+
+        final CfgPropCompletionItem instance = new CfgPropCompletionItem(configurationMeta, 0, 0, true);
+
+        final String result = instance.getRenderText();
+
+        assertEquals("<s>" + id + "</s>", result);
+    }
+
     private KeyEvent keyEventOverwrite() {
         return new KeyEvent(source, 0, 0, KeyEvent.CTRL_DOWN_MASK, KeyEvent.VK_ENTER, '0');
+    }
+
+    private static Deprecation createDeprecation(final Deprecation.Level level) {
+        final Deprecation deprecation = new Deprecation();
+        deprecation.setLevel(level);
+        return deprecation;
     }
 
 }

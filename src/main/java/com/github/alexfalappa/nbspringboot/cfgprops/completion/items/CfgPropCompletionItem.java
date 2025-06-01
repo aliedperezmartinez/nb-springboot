@@ -16,27 +16,19 @@
 package com.github.alexfalappa.nbspringboot.cfgprops.completion.items;
 
 import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.event.KeyEvent;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.ImageIcon;
 import javax.swing.UIManager;
 import javax.swing.text.BadLocationException;
-import javax.swing.text.Document;
 import javax.swing.text.Element;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.StyledDocument;
 
 import org.netbeans.api.editor.completion.Completion;
-import org.netbeans.spi.editor.completion.CompletionItem;
-import org.netbeans.spi.editor.completion.CompletionResultSet;
 import org.netbeans.spi.editor.completion.CompletionTask;
-import org.netbeans.spi.editor.completion.support.AsyncCompletionQuery;
 import org.netbeans.spi.editor.completion.support.AsyncCompletionTask;
-import org.netbeans.spi.editor.completion.support.CompletionUtilities;
 import org.openide.util.Exceptions;
 import org.openide.util.ImageUtilities;
 import org.openide.util.NbPreferences;
@@ -46,6 +38,7 @@ import org.springframework.boot.configurationmetadata.Hints;
 import com.github.alexfalappa.nbspringboot.PrefConstants;
 import com.github.alexfalappa.nbspringboot.Utils;
 import com.github.alexfalappa.nbspringboot.cfgprops.completion.doc.CfgPropCompletionDocumentation;
+import org.netbeans.spi.editor.completion.CompletionDocumentation;
 
 import static com.github.alexfalappa.nbspringboot.Utils.shortenJavaType;
 import static com.github.alexfalappa.nbspringboot.Utils.simpleHtmlEscape;
@@ -58,7 +51,7 @@ import static com.github.alexfalappa.nbspringboot.Utils.simpleHtmlEscape;
  * @author Aggelos Karalias
  * @author Alessandro Falappa
  */
-public class CfgPropCompletionItem implements CompletionItem {
+public class CfgPropCompletionItem extends BaseCompletiomItem {
 
     private static final Logger logger = Logger.getLogger(CfgPropCompletionItem.class.getName());
     private static final ImageIcon fieldIcon = new ImageIcon(ImageUtilities.loadImage(
@@ -66,7 +59,6 @@ public class CfgPropCompletionItem implements CompletionItem {
     private final ConfigurationMetadataProperty configurationMeta;
     private final int caretOffset;
     private final int propStartOffset;
-    private boolean overwrite = false;
     private final String type;
     private final boolean sortDeprLast;
 
@@ -91,6 +83,7 @@ public class CfgPropCompletionItem implements CompletionItem {
             // calculate the amount of chars to remove (by default from property start up to caret position)
             int lenToRemove = caretOffset - propStartOffset;
             int equalSignIndex = -1;
+            final boolean overwrite = isOverwrite();
             if (overwrite) {
                 // NOTE: the editor removes by itself the word at caret when ctrl + enter is pressed
                 // the document state here is different from when the completion was invoked thus we have to
@@ -156,43 +149,18 @@ public class CfgPropCompletionItem implements CompletionItem {
     }
 
     @Override
-    public void processKeyEvent(KeyEvent evt) {
-        // detect if Ctrl + Enter is pressed
-        overwrite = evt.getKeyCode() == KeyEvent.VK_ENTER && (evt.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0;
+    protected Color getDefaultColor(boolean selected) {
+        return selected? UIManager.getColor("List.selectionForeground"): getDeprecatedColor();
     }
 
     @Override
-    public int getPreferredWidth(Graphics graphics, Font font) {
-        return CompletionUtilities.getPreferredWidth(getText(), getTextRight(), graphics, font);
-    }
-
-    @Override
-    public void render(Graphics g, Font defaultFont, Color defaultColor, Color backgroundColor, int width, int height,
-            boolean selected) {
-        String leftHtmlText = getText();
-        if (configurationMeta.isDeprecated()) {
-            leftHtmlText = "<s>" + leftHtmlText + "</s>";
-        }
-        final Color color = Utils.isErrorDeprecated(configurationMeta)
-                ? UIManager.getColor("nb.errorForeground")
-                : UIManager.getColor("List.foreground");
-        CompletionUtilities.renderHtml(fieldIcon, leftHtmlText, getTextRight(), g, defaultFont, (selected ? UIManager.getColor(
-                "List.selectionForeground") : color), width, height, selected);
+    protected ImageIcon getIcon() {
+        return fieldIcon;
     }
 
     @Override
     public CompletionTask createDocumentationTask() {
         return new AsyncCompletionTask(new AsyncCompletionQueryImpl(configurationMeta));
-    }
-
-    @Override
-    public CompletionTask createToolTipTask() {
-        return null;
-    }
-
-    @Override
-    public boolean instantSubstitution(JTextComponent component) {
-        return false;
     }
 
     @Override
@@ -210,20 +178,23 @@ public class CfgPropCompletionItem implements CompletionItem {
         return getText();
     }
 
-    boolean isOverwrite() {
-        return overwrite;
-    }
-
-    String getType() {
-        return type;
-    }
-
-    private String getText() {
+    @Override
+    protected String getText() {
         return configurationMeta.getId();
     }
 
-    private String getTextRight() {
-        return getType();
+    @Override
+    protected String getTextRight() {
+        return type;
+    }
+
+    @Override
+    protected String getRenderText() {
+        final String text = getText();
+        if (configurationMeta.isDeprecated()) {
+            return "<s>" + text + "</s>";
+        }
+        return text;
     }
 
     private boolean canCompleteKey() {
@@ -254,6 +225,12 @@ public class CfgPropCompletionItem implements CompletionItem {
         return isCompletableType(configurationMeta.getType());
     }
 
+    private Color getDeprecatedColor() {
+        return Utils.isErrorDeprecated(configurationMeta)
+            ? UIManager.getColor("nb.errorForeground")
+            : UIManager.getColor("List.foreground");
+    }
+
     private static boolean isCompletableType(String dataType) {
         return switch (dataType) {
             case "java.lang.Boolean",
@@ -281,7 +258,7 @@ public class CfgPropCompletionItem implements CompletionItem {
         };
     }
 
-    private static class AsyncCompletionQueryImpl extends AsyncCompletionQuery {
+    private static class AsyncCompletionQueryImpl extends BaseAsyncCompletionQuery {
 
         private final ConfigurationMetadataProperty configurationMeta;
 
@@ -290,9 +267,8 @@ public class CfgPropCompletionItem implements CompletionItem {
         }
 
         @Override
-        protected void query(CompletionResultSet completionResultSet, Document document, int i) {
-            completionResultSet.setDocumentation(new CfgPropCompletionDocumentation(configurationMeta));
-            completionResultSet.finish();
+        protected CompletionDocumentation createCompletionDocumentation() {
+            return new CfgPropCompletionDocumentation(configurationMeta);
         }
     }
 

@@ -42,25 +42,6 @@ public class JavaTypeCompletionItemTest {
     private Element lineElement;
 
     @Test
-    public void testGetText() {
-        final String name = "name";
-        final JavaTypeCompletionItem instance = new JavaTypeCompletionItem(name, ElementKind.METHOD, 0, 0);
-
-        final String result = instance.getText();
-
-        assertEquals(name, result);
-    }
-
-    @Test
-    public void testGetTextRight() {
-        final JavaTypeCompletionItem instance = new JavaTypeCompletionItem("name", ElementKind.METHOD, 0, 0);
-
-        final String result = instance.getTextRight();
-
-        assertNull(result);
-    }
-
-    @Test
     public void testDefaultAction() throws BadLocationException {
         when(component.getDocument()).thenReturn(doc);
         final String name = "name";
@@ -208,24 +189,6 @@ public class JavaTypeCompletionItemTest {
         final CompletionTask result = instance.createDocumentationTask();
 
         assertNull(result);
-    }
-
-    @Test
-    public void testCreateToolTipTask() {
-        final JavaTypeCompletionItem instance = new JavaTypeCompletionItem("name", ElementKind.METHOD, 0, 0);
-
-        final CompletionTask result = instance.createToolTipTask();
-
-        assertNull(result);
-    }
-
-    @Test
-    public void testInstantSubstitution() {
-        final JavaTypeCompletionItem instance = new JavaTypeCompletionItem("name", ElementKind.METHOD, 0, 0);
-
-        final boolean result = instance.instantSubstitution(component);
-
-        assertFalse(result);
     }
 
     @Test

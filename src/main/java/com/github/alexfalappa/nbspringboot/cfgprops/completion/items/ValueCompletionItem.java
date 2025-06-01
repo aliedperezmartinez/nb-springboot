@@ -15,34 +15,20 @@
  */
 package com.github.alexfalappa.nbspringboot.cfgprops.completion.items;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.event.KeyEvent;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.ImageIcon;
-import javax.swing.UIManager;
 import javax.swing.text.BadLocationException;
-import javax.swing.text.Document;
 import javax.swing.text.Element;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.StyledDocument;
 
 import org.netbeans.api.editor.completion.Completion;
-import org.netbeans.spi.editor.completion.CompletionItem;
-import org.netbeans.spi.editor.completion.CompletionResultSet;
-import org.netbeans.spi.editor.completion.CompletionTask;
-import org.netbeans.spi.editor.completion.support.AsyncCompletionQuery;
-import org.netbeans.spi.editor.completion.support.AsyncCompletionTask;
-import org.netbeans.spi.editor.completion.support.CompletionUtilities;
 import org.openide.util.Exceptions;
 import org.openide.util.ImageUtilities;
 import org.springframework.boot.configurationmetadata.ValueHint;
 
-import com.github.alexfalappa.nbspringboot.Utils;
-import com.github.alexfalappa.nbspringboot.cfgprops.completion.doc.CfgPropValueCompletionDocumentation;
 
 /**
  * The implementation of {@code CompletionItem} for Spring Boot value hints.
@@ -51,34 +37,26 @@ import com.github.alexfalappa.nbspringboot.cfgprops.completion.doc.CfgPropValueC
  *
  * @author Alessandro Falappa
  */
-public class ValueCompletionItem implements CompletionItem {
+public class ValueCompletionItem extends HintCompletionItem {
 
     private static final Logger logger = Logger.getLogger(ValueCompletionItem.class.getName());
     private static final ImageIcon fieldIcon = new ImageIcon(ImageUtilities.loadImage(
             "com/github/alexfalappa/nbspringboot/cfgprops/completion/springboot-value.png"));
-    private final ValueHint hint;
-    private final int dotOffset;
-    private final int caretOffset;
     private final boolean continueCompletion;
-    private boolean overwrite;
 
     public ValueCompletionItem(ValueHint hint, int dotOffset, int caretOffset) {
         this(hint, dotOffset, caretOffset, false);
     }
 
     public ValueCompletionItem(ValueHint hint, int dotOffset, int caretOffset, boolean continueCompletion) {
-        this.hint = hint;
-        this.dotOffset = dotOffset;
-        this.caretOffset = caretOffset;
+        super(hint, caretOffset, dotOffset);
         this.continueCompletion = continueCompletion;
     }
 
-    public ValueHint getHint() {
-        return hint;
-    }
 
     @Override
     public void defaultAction(JTextComponent jtc) {
+        final ValueHint hint = getHint();
         logger.log(Level.FINER, "Accepted value completion: {0}", hint.toString());
         try {
             StyledDocument doc = (StyledDocument) jtc.getDocument();
@@ -120,83 +98,8 @@ public class ValueCompletionItem implements CompletionItem {
     }
 
     @Override
-    public void processKeyEvent(KeyEvent evt) {
-        // detect if Ctrl + Enter is pressed
-        overwrite = evt.getKeyCode() == KeyEvent.VK_ENTER && (evt.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0;
-    }
-
-    @Override
-    public int getPreferredWidth(Graphics graphics, Font font) {
-        return CompletionUtilities.getPreferredWidth(getText(), getTextRight(), graphics, font);
-    }
-
-    @Override
-    public void render(Graphics g, Font defaultFont, Color defaultColor, Color backgroundColor, int width, int height,
-            boolean selected) {
-        CompletionUtilities.renderHtml(fieldIcon, getText(), getTextRight(), g, defaultFont,
-                (selected ? UIManager.getColor("List.selectionForeground") : UIManager.getColor("List.foreground")),
-                width, height, selected);
-    }
-
-    @Override
-    public CompletionTask createDocumentationTask() {
-        if (hint.getDescription() != null) {
-            return new AsyncCompletionTask(new AsyncCompletionQueryImpl(hint));
-        } else {
-            return null;
-        }
-    }
-
-    @Override
-    public CompletionTask createToolTipTask() {
-        return null;
-    }
-
-    @Override
-    public boolean instantSubstitution(JTextComponent component) {
-        return false;
-    }
-
-    @Override
-    public int getSortPriority() {
-        return 0;
-    }
-
-    @Override
-    public CharSequence getSortText() {
-        return hint.getValue().toString();
-    }
-
-    @Override
-    public CharSequence getInsertPrefix() {
-        return hint.getValue().toString();
-    }
-
-    boolean isOverwrite() {
-        return overwrite;
-    }
-
-    private String getText() {
-        return Utils.simpleHtmlEscape(hint.getValue().toString());
-    }
-
-    private String getTextRight() {
-        return null;
-    }
-
-    private static class AsyncCompletionQueryImpl extends AsyncCompletionQuery {
-
-        private final ValueHint hint;
-
-        public AsyncCompletionQueryImpl(ValueHint hint) {
-            this.hint = hint;
-        }
-
-        @Override
-        protected void query(CompletionResultSet completionResultSet, Document document, int i) {
-            completionResultSet.setDocumentation(new CfgPropValueCompletionDocumentation(hint));
-            completionResultSet.finish();
-        }
+    protected ImageIcon getIcon() {
+        return fieldIcon;
     }
 
 }
