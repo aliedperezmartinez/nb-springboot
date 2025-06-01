@@ -15,32 +15,32 @@ public class AdvancedTest extends TestBase {
 
     @Test
     public void testSingleEqualContinuation() throws URISyntaxException, IOException {
-        System.out.println("\n-- single equal continuation");
-        parseMatch("key=val\\\n"
-                + "on next line");
+        parseMatch("""
+                   key=val\\
+                   on next line""");
     }
 
     @Test
     public void testSingleEqualContinuationSlash() throws URISyntaxException, IOException {
-        System.out.println("\n-- single equal continuation slash");
-        parseMatch(" anotherkey = slash before\\\\\\\n"
-                + "continuation");
+        parseMatch("""
+                    anotherkey = slash before\\\\\\
+                   continuation""");
     }
 
     @Test
     public void testSingleEqualContinuationSpace() throws URISyntaxException, IOException {
-        System.out.println("\n-- single equal continuation space");
-        parseMatch("key2=value\\\n"
-                + "    with space at start of continuation");
+        parseMatch("""
+                   key2=value\\
+                       with space at start of continuation""");
     }
 
     @Test
     public void testMultipleEqualContinuation() throws URISyntaxException, IOException {
-        System.out.println("\n-- multiple equal continuation");
-        parseMatch("key1=first\\\n"
-                + "value\n"
-                + "key2=second\\\n"
-                + "value");
+        parseMatch("""
+                   key1=first\\
+                   value
+                   key2=second\\
+                   value""");
     }
 
 }

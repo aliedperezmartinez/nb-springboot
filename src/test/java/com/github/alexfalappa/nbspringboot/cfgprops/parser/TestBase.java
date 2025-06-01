@@ -11,13 +11,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 
 import org.parboiled.Parboiled;
-import org.parboiled.errors.ErrorUtils;
 import org.parboiled.errors.ParseError;
 import org.parboiled.parserunners.ReportingParseRunner;
 import org.parboiled.parserunners.TracingParseRunner;
-import org.parboiled.support.ParseTreeUtils;
 import org.parboiled.support.ParsingResult;
-
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -30,15 +27,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @Tag("LexerTests")
 public class TestBase {
 
-    final protected CfgPropsParboiled parser;
-    final protected ReportingParseRunner reportingRunner;
-    final protected TracingParseRunner tracingRunner;
-
-    TestBase() {
-        parser = Parboiled.createParser(CfgPropsParboiled.class);
-        tracingRunner = new TracingParseRunner(parser.cfgProps());
-        reportingRunner = new ReportingParseRunner(parser.cfgProps());
-    }
+    final protected CfgPropsParboiled parser = Parboiled.createParser(CfgPropsParboiled.class);
+    final protected ReportingParseRunner reportingRunner = new ReportingParseRunner(parser.cfgProps());
+    final protected TracingParseRunner tracingRunner = new TracingParseRunner(parser.cfgProps());
 
     @BeforeEach
     public void clearParser() {
@@ -48,7 +39,6 @@ public class TestBase {
     protected void parseNoMatch(String input) {
         ParsingResult<?> result = reportingRunner.run(input);
         if (result.matched) {
-            System.out.println("Parser erroneously matched input:");
             listPropsOrdered(parser.getParsedProps());
             result = tracingRunner.run(input);
         }
@@ -58,16 +48,13 @@ public class TestBase {
     protected void parseMatch(String input) {
         ParsingResult<?> result = reportingRunner.run(input);
         if (result.matched) {
-            System.out.println(ParseTreeUtils.printNodeTree(result));
             final Properties pp = parser.getParsedProps();
             if (!pp.isEmpty()) {
                 listPropsOrdered(pp);
             }
         } else {
             result = tracingRunner.run(input);
-            System.out.println("\n\nParser did not match input:");
             for (ParseError pe : result.parseErrors) {
-                System.out.format("\t%s%n", ErrorUtils.printParseError(pe));
             }
         }
         assertTrue(result.matched);
@@ -81,11 +68,9 @@ public class TestBase {
 
     protected void listPropsOrdered(Properties p) {
         if (p.isEmpty()) {
-            System.out.println("No properties");
         } else {
             TreeSet<Object> sortedKeys = new TreeSet<>(p.keySet());
             for (Object k : sortedKeys) {
-                System.out.printf("[%s] -> [%s]%n", k.toString(), p.getProperty(k.toString()));
             }
         }
     }

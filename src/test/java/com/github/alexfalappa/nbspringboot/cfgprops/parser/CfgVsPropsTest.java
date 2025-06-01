@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.junit.jupiter.api.Test;
-import org.parboiled.errors.ErrorUtils;
 import org.parboiled.errors.ParseError;
 import org.parboiled.support.ParsingResult;
 
@@ -27,23 +26,17 @@ public class CfgVsPropsTest extends TestBase {
 
     @Test
     public void testCompareProps() throws IOException, URISyntaxException {
-        System.out.println("\n--- compare props");
         try (InputStream is = getClass().getResourceAsStream("/load.properties")) {
-            System.out.println("\nLOADED");
             Properties loaded = new Properties();
             loaded.load(is);
             listPropsOrdered(loaded);
-            System.out.println("\nPARSED");
             final String strFile = readResource("/load.properties");
             ParsingResult pr = reportingRunner.run(strFile);
             final Properties parsed = parser.getParsedProps();
             listPropsOrdered(parsed);
             if (!pr.matched) {
-//                pr = tracingRunner.run(strFile);
-                System.out.println("\n\nParser did not match input:");
                 for (Object err : reportingRunner.getParseErrors()) {
                     ParseError pe = (ParseError) err;
-                    System.out.format("\t%s%n", ErrorUtils.printParseError(pe));
                 }
             }
             assertTrue(pr.matched, "Failed parsing");
@@ -60,7 +53,6 @@ public class CfgVsPropsTest extends TestBase {
     }
 
     public void testWriteProps() throws IOException {
-        System.out.println("\n--- write props");
         Properties p = new Properties();
         p.setProperty("key", "value");
         p.setProperty("a=key", "value");
