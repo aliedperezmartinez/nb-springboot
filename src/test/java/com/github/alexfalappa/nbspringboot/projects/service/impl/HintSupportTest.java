@@ -20,10 +20,6 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-/**
- *
- * @author user
- */
 public class HintSupportTest {
 
     @Test

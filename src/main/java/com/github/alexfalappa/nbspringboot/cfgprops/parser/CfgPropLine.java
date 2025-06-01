@@ -22,18 +22,6 @@ package com.github.alexfalappa.nbspringboot.cfgprops.parser;
  */
 public record CfgPropLine(int line, String key, String value) {
 
-    public int getLine() {
-        return line;
-    }
-
-    public String getKey() {
-        return key;
-    }
-
-    public String getValue() {
-        return value;
-    }
-
     @Override
     public String toString() {
         return "[" + line + "] " + key + " -> " + value;

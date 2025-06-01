@@ -46,13 +46,9 @@ import java.util.Collections;
 public class CfgPropsParser extends Parser {
 
     private static final Logger logger = Logger.getLogger(CfgPropsParser.class.getName());
-    private final CfgPropsParboiled parboiled;
+    private final CfgPropsParboiled parboiled = Parboiled.createParser(CfgPropsParboiled.class);
     private Snapshot snapshot;
     private ParsingResult parbResult;
-
-    public CfgPropsParser() {
-        parboiled = Parboiled.createParser(CfgPropsParboiled.class);
-    }
 
     @Override
     public void parse(Snapshot snapshot, Task task, SourceModificationEvent sme) throws ParseException {

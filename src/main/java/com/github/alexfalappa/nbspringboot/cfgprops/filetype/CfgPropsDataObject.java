@@ -118,8 +118,7 @@ public class CfgPropsDataObject extends MultiDataObject {
 
     @Override
     protected Node createNodeDelegate() {
-        DataNode node = new DataNode(this, Children.LEAF, getLookup());
-        return node;
+        return new DataNode(this, Children.LEAF, getLookup());
     }
 
     @Override

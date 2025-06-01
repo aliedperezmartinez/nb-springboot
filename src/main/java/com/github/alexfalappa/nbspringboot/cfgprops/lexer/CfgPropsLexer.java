@@ -44,12 +44,11 @@ public class CfgPropsLexer implements Lexer<CfgPropsTokenId> {
     @Override
     public Token<CfgPropsTokenId> nextToken() {
         try {
-            CfgPropsTokenId tokenId = scanner.nextTokenId();
-            Token<CfgPropsTokenId> token = null;
+            final CfgPropsTokenId tokenId = scanner.nextTokenId();
             if (tokenId != null) {
-                token = tokenFactory.createToken(tokenId);
+                return tokenFactory.createToken(tokenId);
             }
-            return token;
+            return null;
         } catch (IOException ex) {
             Logger.getLogger(CfgPropsLexer.class.getName()).log(Level.SEVERE, null, ex);
         }

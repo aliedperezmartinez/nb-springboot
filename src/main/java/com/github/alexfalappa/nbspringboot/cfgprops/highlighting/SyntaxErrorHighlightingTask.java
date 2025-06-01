@@ -35,6 +35,7 @@ import org.parboiled.errors.ParseError;
 
 import com.github.alexfalappa.nbspringboot.PrefConstants;
 import com.github.alexfalappa.nbspringboot.cfgprops.parser.CfgPropsParser;
+import org.parboiled.support.ParsingResult;
 
 /**
  * Highlighting task for syntax errors.
@@ -70,8 +71,9 @@ public class SyntaxErrorHighlightingTask extends BaseHighlightingTask {
             List<ErrorDescription> errors, Severity severity) {
         logger.fine("Highlighting syntax errors");
         try {
-            final InputBuffer ibuf = cfgResult.getParbResult().inputBuffer;
-            final List<ParseError> parseErrors = cfgResult.getParbResult().parseErrors;
+            final ParsingResult parbResult = cfgResult.getParbResult();
+            final InputBuffer ibuf = parbResult.inputBuffer;
+            final List<ParseError> parseErrors = parbResult.parseErrors;
             for (ParseError error : parseErrors) {
                 String message = error.getErrorMessage() != null
                         ? error.getErrorMessage()

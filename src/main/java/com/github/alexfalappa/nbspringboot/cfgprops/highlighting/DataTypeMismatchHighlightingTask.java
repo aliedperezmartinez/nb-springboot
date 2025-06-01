@@ -176,12 +176,7 @@ public class DataTypeMismatchHighlightingTask extends BaseHighlightingTask {
     }
 
     private boolean checkType(String type, String text, ClassLoader cl) throws IllegalArgumentException {
-        Class<?> clazz;
-        try {
-            clazz = Class.forName(type);
-        } catch (ClassNotFoundException ex) {
-            clazz = ClassUtils.resolveClassName(type, cl);
-        }
+        Class<?> clazz = getClass(type, cl);
         if (clazz != null) {
             try {
                 Object obj = conversionService.convert(text, TypeDescriptor.valueOf(String.class), TypeDescriptor.valueOf(clazz));
@@ -192,5 +187,13 @@ public class DataTypeMismatchHighlightingTask extends BaseHighlightingTask {
         }
         // unresolvable/unknown class, assume user knows what is doing
         return true;
+    }
+
+    private static Class<?> getClass(String type, ClassLoader cl) throws IllegalArgumentException {
+        try {
+            return Class.forName(type);
+        } catch (ClassNotFoundException ex) {
+            return ClassUtils.resolveClassName(type, cl);
+        }
     }
 }
