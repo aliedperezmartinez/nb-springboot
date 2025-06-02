@@ -54,7 +54,6 @@ import org.netbeans.spi.project.ProjectManagerImplementation;
 import org.openide.filesystems.FileObject;
 import org.openide.loaders.DataObject;
 import org.openide.nodes.Node;
-import org.openide.util.ContextGlobalProvider;
 import org.openide.util.Lookup;
 import org.openide.util.Mutex;
 import org.openide.util.Utilities;
@@ -777,21 +776,6 @@ public class UtilsTest {
         public static void setClassPath(ClassPath classPath) {
             TestClassPathProvider.classPath = classPath;
         }
-    }
-
-    public static class TestContextGlobalProvider implements ContextGlobalProvider {
-
-        private static Lookup lookup;
-
-        @Override
-        public Lookup createGlobalContext() {
-            return lookup;
-        }
-
-        public static void setLookup(Lookup lookup) {
-            TestContextGlobalProvider.lookup = lookup;
-        }
-
     }
 
     public static class TestFileOwnerQueryImplementation implements FileOwnerQueryImplementation {

@@ -54,7 +54,9 @@ public class CfgPropsCompletionProvider implements CompletionProvider {
         if (prj == null) {
             return null;
         }
-        logger.log(FINE, "Completing within context of prj {0}", FileUtil.getFileDisplayName(prj.getProjectDirectory()));
+        if (logger.isLoggable(FINE)) {
+            logger.log(FINE, "Completing within context of prj {0}", FileUtil.getFileDisplayName(prj.getProjectDirectory()));
+        }
         final SpringBootService sbs = prj.getLookup().lookup(SpringBootService.class);
         if (sbs == null) {
             return null;
